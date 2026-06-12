@@ -276,6 +276,12 @@ export const attributionModels: AttributionModel[] = [
       { channelId: "ch-display", attribution: 8 },
     ],
     accuracy: 94,
+    privacySignals: {
+      firstPartyCoverage: 87,
+      modeledConversionShare: 31,
+      consentedEventShare: 76,
+      cookielessReady: true,
+    },
   },
   {
     id: "attr-2",
@@ -289,6 +295,12 @@ export const attributionModels: AttributionModel[] = [
       { channelId: "ch-display", attribution: 5 },
     ],
     accuracy: 82,
+    privacySignals: {
+      firstPartyCoverage: 64,
+      modeledConversionShare: 18,
+      consentedEventShare: 58,
+      cookielessReady: false,
+    },
   },
 ];
 

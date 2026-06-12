@@ -45,6 +45,12 @@ export interface AttributionModel {
   type: AttributionModelType;
   channels: { channelId: string; attribution: number }[];
   accuracy: number;
+  privacySignals: {
+    firstPartyCoverage: number;
+    modeledConversionShare: number;
+    consentedEventShare: number;
+    cookielessReady: boolean;
+  };
 }
 
 export interface Campaign {

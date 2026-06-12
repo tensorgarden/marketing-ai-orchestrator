@@ -92,6 +92,21 @@ describe("demo-data: attributionModels", () => {
       expect(total).toBe(100);
     }
   });
+
+  it("should track privacy-first attribution readiness signals", () => {
+    for (const m of attributionModels) {
+      expect(m.privacySignals.firstPartyCoverage).toBeGreaterThanOrEqual(0);
+      expect(m.privacySignals.firstPartyCoverage).toBeLessThanOrEqual(100);
+      expect(m.privacySignals.consentedEventShare).toBeGreaterThanOrEqual(0);
+      expect(m.privacySignals.consentedEventShare).toBeLessThanOrEqual(100);
+      expect(m.privacySignals.modeledConversionShare).toBeGreaterThanOrEqual(0);
+      expect(m.privacySignals.modeledConversionShare).toBeLessThanOrEqual(100);
+    }
+  });
+
+  it("should include at least one cookieless-ready attribution model", () => {
+    expect(attributionModels.some((m) => m.privacySignals.cookielessReady)).toBe(true);
+  });
 });
 
 describe("demo-data: aiGeneratedContent", () => {
