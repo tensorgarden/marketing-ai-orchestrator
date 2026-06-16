@@ -127,9 +127,27 @@ function ChannelAttribution() {
       <h2 className="mb-4 text-sm font-semibold text-slate-900">
         Channel Attribution Breakdown
       </h2>
-      <p className="mb-3 text-xs text-slate-400">
+      <p className="mb-2 text-xs text-slate-400">
         Model: {model.name} (accuracy: {model.accuracy}%)
       </p>
+      <div className="mb-3 flex flex-wrap gap-2">
+        {model.privacySignals.cookielessReady && (
+          <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-medium text-emerald-700">
+            Cookieless Ready
+          </span>
+        )}
+        <span className="inline-flex items-center gap-1 rounded-full bg-blue-50 px-2 py-0.5 text-xs font-medium text-blue-600">
+          1P Coverage: {model.privacySignals.firstPartyCoverage}%
+        </span>
+        <span className="inline-flex items-center gap-1 rounded-full bg-amber-50 px-2 py-0.5 text-xs font-medium text-amber-600">
+          Consented: {model.privacySignals.consentedEventShare}%
+        </span>
+        {model.privacySignals.modeledConversionShare > 0 && (
+          <span className="inline-flex items-center gap-1 rounded-full bg-purple-50 px-2 py-0.5 text-xs font-medium text-purple-600">
+            Modeled: {model.privacySignals.modeledConversionShare}%
+          </span>
+        )}
+      </div>
       <div className="space-y-3">
         {model.channels.map((ac) => {
           const ch = channels.find((c) => c.id === ac.channelId);

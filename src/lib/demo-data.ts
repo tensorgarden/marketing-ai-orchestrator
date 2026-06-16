@@ -302,6 +302,25 @@ export const attributionModels: AttributionModel[] = [
       cookielessReady: false,
     },
   },
+  {
+    id: "attr-3",
+    name: "Marketing Mix Model (MMM)",
+    type: "data_driven",
+    channels: [
+      { channelId: "ch-search", attribution: 30 },
+      { channelId: "ch-email", attribution: 28 },
+      { channelId: "ch-social", attribution: 22 },
+      { channelId: "ch-content", attribution: 14 },
+      { channelId: "ch-display", attribution: 6 },
+    ],
+    accuracy: 89,
+    privacySignals: {
+      firstPartyCoverage: 96,
+      modeledConversionShare: 0,
+      consentedEventShare: 94,
+      cookielessReady: true,
+    },
+  },
 ];
 
 export const aiGeneratedContent: AIGeneratedContent[] = [

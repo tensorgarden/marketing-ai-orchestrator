@@ -86,6 +86,10 @@ describe("demo-data: attributionModels", () => {
     expect(attributionModels.length).toBeGreaterThanOrEqual(2);
   });
 
+  it("should have at least 3 attribution models", () => {
+    expect(attributionModels.length).toBeGreaterThanOrEqual(3);
+  });
+
   it("should have channel attributions summing to 100", () => {
     for (const m of attributionModels) {
       const total = m.channels.reduce((s, c) => s + c.attribution, 0);
@@ -106,6 +110,19 @@ describe("demo-data: attributionModels", () => {
 
   it("should include at least one cookieless-ready attribution model", () => {
     expect(attributionModels.some((m) => m.privacySignals.cookielessReady)).toBe(true);
+  });
+
+  it("should have at least two cookieless-ready models for buyer confidence", () => {
+    const ready = attributionModels.filter((m) => m.privacySignals.cookielessReady);
+    expect(ready.length).toBeGreaterThanOrEqual(2);
+  });
+
+  it("MMM model should use zero-modeled conversions with high first-party coverage", () => {
+    const mmm = attributionModels.find((m) => m.name === "Marketing Mix Model (MMM)");
+    expect(mmm).toBeDefined();
+    expect(mmm!.privacySignals.modeledConversionShare).toBe(0);
+    expect(mmm!.privacySignals.firstPartyCoverage).toBeGreaterThanOrEqual(90);
+    expect(mmm!.privacySignals.cookielessReady).toBe(true);
   });
 });
 
