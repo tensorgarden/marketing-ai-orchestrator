@@ -124,6 +124,17 @@ describe("demo-data: attributionModels", () => {
     expect(mmm!.privacySignals.firstPartyCoverage).toBeGreaterThanOrEqual(90);
     expect(mmm!.privacySignals.cookielessReady).toBe(true);
   });
+
+  it("MMM model should carry the marketing_mix type to distinguish aggregate modeling from user-level MTA", () => {
+    const mmm = attributionModels.find((m) => m.name === "Marketing Mix Model (MMM)");
+    expect(mmm).toBeDefined();
+    expect(mmm!.type).toBe("marketing_mix");
+  });
+
+  it("should use a distinct attribution type per model — no two models share the same methodology", () => {
+    const types = new Set(attributionModels.map((m) => m.type));
+    expect(types.size).toBe(attributionModels.length);
+  });
 });
 
 describe("demo-data: aiGeneratedContent", () => {

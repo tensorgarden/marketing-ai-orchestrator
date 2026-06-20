@@ -1,7 +1,7 @@
 export type CampaignStatus = "active" | "paused" | "completed" | "draft";
 export type ChannelType = "email" | "social" | "search" | "display" | "content";
 export type ContentType = "blog" | "social_post" | "email_campaign" | "landing_page" | "ad_copy" | "video_script";
-export type AttributionModelType = "first_touch" | "last_touch" | "linear" | "time_decay" | "position_based" | "data_driven";
+export type AttributionModelType = "first_touch" | "last_touch" | "linear" | "time_decay" | "position_based" | "data_driven" | "marketing_mix";
 export type AIContentStatus = "draft" | "review" | "approved" | "published";
 export type CampaignGoal = "awareness" | "lead_gen" | "conversion" | "retention" | "upsell";
 export type AISentiment = "positive" | "neutral" | "persuasive";

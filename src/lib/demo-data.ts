@@ -305,7 +305,7 @@ export const attributionModels: AttributionModel[] = [
   {
     id: "attr-3",
     name: "Marketing Mix Model (MMM)",
-    type: "data_driven",
+    type: "marketing_mix",
     channels: [
       { channelId: "ch-search", attribution: 30 },
       { channelId: "ch-email", attribution: 28 },
