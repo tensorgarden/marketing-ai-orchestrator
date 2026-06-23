@@ -105,6 +105,27 @@ describe("demo-data: attributionModels", () => {
       expect(m.privacySignals.consentedEventShare).toBeLessThanOrEqual(100);
       expect(m.privacySignals.modeledConversionShare).toBeGreaterThanOrEqual(0);
       expect(m.privacySignals.modeledConversionShare).toBeLessThanOrEqual(100);
+      if (m.privacySignals.identityGraphMatchRate !== null) {
+        expect(m.privacySignals.identityGraphMatchRate).toBeGreaterThanOrEqual(0);
+        expect(m.privacySignals.identityGraphMatchRate).toBeLessThanOrEqual(100);
+      }
+    }
+  });
+
+  it("should flag user-level models below 70% identity match as signal-loss risk", () => {
+    for (const m of attributionModels) {
+      const matchRate = m.privacySignals.identityGraphMatchRate;
+      if (m.privacySignals.identityResolutionMode === "user_level" && matchRate !== null && matchRate < 70) {
+        expect(["medium", "high"]).toContain(m.privacySignals.signalLossRisk);
+      }
+    }
+  });
+
+  it("cookieless-ready models should avoid weak identity-graph dependency", () => {
+    for (const m of attributionModels.filter((model) => model.privacySignals.cookielessReady)) {
+      const matchRate = m.privacySignals.identityGraphMatchRate;
+      const isAggregateMmm = m.privacySignals.identityResolutionMode === "aggregate_mmm";
+      expect(isAggregateMmm || (matchRate !== null && matchRate >= 70)).toBe(true);
     }
   });
 
@@ -123,6 +144,8 @@ describe("demo-data: attributionModels", () => {
     expect(mmm!.privacySignals.modeledConversionShare).toBe(0);
     expect(mmm!.privacySignals.firstPartyCoverage).toBeGreaterThanOrEqual(90);
     expect(mmm!.privacySignals.cookielessReady).toBe(true);
+    expect(mmm!.privacySignals.identityResolutionMode).toBe("aggregate_mmm");
+    expect(mmm!.privacySignals.identityGraphMatchRate).toBeNull();
   });
 
   it("MMM model should carry the marketing_mix type to distinguish aggregate modeling from user-level MTA", () => {

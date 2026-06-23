@@ -4,7 +4,7 @@ import { useMemo } from "react";
 import { clsx } from "clsx";
 import { campaigns, channels, contentAssets, attributionModels, aiGeneratedContent, computeMetrics } from "@/lib/demo-data";
 import { StatusDot, Badge, Card, ProgressBar, StatCard } from "@/components/ui";
-import type { Campaign } from "@/lib/types";
+import type { Campaign, MeasurementRisk } from "@/lib/types";
 
 // ── Helpers ────────────────────────────────────────────────────────────────
 function formatCurrency(n: number): string {
@@ -50,6 +50,15 @@ function goalLabel(goal: string): string {
     upsell: "Upsell",
   };
   return map[goal] ?? goal;
+}
+
+function signalLossClass(risk: MeasurementRisk): string {
+  const map: Record<MeasurementRisk, string> = {
+    low: "bg-emerald-50 text-emerald-700",
+    medium: "bg-amber-50 text-amber-700",
+    high: "bg-red-50 text-red-700",
+  };
+  return map[risk];
 }
 
 // ── Campaign Row ───────────────────────────────────────────────────────────
@@ -147,6 +156,14 @@ function ChannelAttribution() {
             Modeled: {model.privacySignals.modeledConversionShare}%
           </span>
         )}
+        <span className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-700">
+          {model.privacySignals.identityGraphMatchRate === null
+            ? "Aggregate MMM"
+            : `Identity Match: ${model.privacySignals.identityGraphMatchRate}%`}
+        </span>
+        <span className={clsx("inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium", signalLossClass(model.privacySignals.signalLossRisk))}>
+          Signal Loss: {model.privacySignals.signalLossRisk}
+        </span>
       </div>
       <div className="space-y-3">
         {model.channels.map((ac) => {
