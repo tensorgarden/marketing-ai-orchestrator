@@ -4,6 +4,7 @@ export type ContentType = "blog" | "social_post" | "email_campaign" | "landing_p
 export type AttributionModelType = "first_touch" | "last_touch" | "linear" | "time_decay" | "position_based" | "data_driven" | "marketing_mix";
 export type IdentityResolutionMode = "user_level" | "aggregate_mmm";
 export type MeasurementRisk = "low" | "medium" | "high";
+export type MeasurementValidationMethod = "platform_attribution" | "incrementality_test" | "marketing_mix_model";
 export type AIContentStatus = "draft" | "review" | "approved" | "published";
 export type CampaignGoal = "awareness" | "lead_gen" | "conversion" | "retention" | "upsell";
 export type AISentiment = "positive" | "neutral" | "persuasive";
@@ -54,6 +55,9 @@ export interface AttributionModel {
     identityGraphMatchRate: number | null;
     identityResolutionMode: IdentityResolutionMode;
     signalLossRisk: MeasurementRisk;
+    validationMethod: MeasurementValidationMethod;
+    incrementalityHoldoutShare: number | null;
+    businessOutcomeKpi: string;
     cookielessReady: boolean;
   };
 }

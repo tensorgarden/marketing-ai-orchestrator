@@ -4,7 +4,7 @@ import { useMemo } from "react";
 import { clsx } from "clsx";
 import { campaigns, channels, contentAssets, attributionModels, aiGeneratedContent, computeMetrics } from "@/lib/demo-data";
 import { StatusDot, Badge, Card, ProgressBar, StatCard } from "@/components/ui";
-import type { Campaign, MeasurementRisk } from "@/lib/types";
+import type { Campaign, MeasurementRisk, MeasurementValidationMethod } from "@/lib/types";
 
 // ── Helpers ────────────────────────────────────────────────────────────────
 function formatCurrency(n: number): string {
@@ -59,6 +59,15 @@ function signalLossClass(risk: MeasurementRisk): string {
     high: "bg-red-50 text-red-700",
   };
   return map[risk];
+}
+
+function validationMethodLabel(method: MeasurementValidationMethod): string {
+  const map: Record<MeasurementValidationMethod, string> = {
+    platform_attribution: "Platform attribution",
+    incrementality_test: "Incrementality test",
+    marketing_mix_model: "Marketing mix model",
+  };
+  return map[method];
 }
 
 // ── Campaign Row ───────────────────────────────────────────────────────────
@@ -163,6 +172,17 @@ function ChannelAttribution() {
         </span>
         <span className={clsx("inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium", signalLossClass(model.privacySignals.signalLossRisk))}>
           Signal Loss: {model.privacySignals.signalLossRisk}
+        </span>
+        <span className="inline-flex items-center gap-1 rounded-full bg-indigo-50 px-2 py-0.5 text-xs font-medium text-indigo-600">
+          Validation: {validationMethodLabel(model.privacySignals.validationMethod)}
+        </span>
+        {model.privacySignals.incrementalityHoldoutShare !== null && (
+          <span className="inline-flex items-center gap-1 rounded-full bg-cyan-50 px-2 py-0.5 text-xs font-medium text-cyan-700">
+            Holdout: {model.privacySignals.incrementalityHoldoutShare}%
+          </span>
+        )}
+        <span className="inline-flex items-center gap-1 rounded-full bg-slate-50 px-2 py-0.5 text-xs font-medium text-slate-600">
+          KPI: {model.privacySignals.businessOutcomeKpi}
         </span>
       </div>
       <div className="space-y-3">

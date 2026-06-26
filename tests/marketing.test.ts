@@ -121,6 +121,34 @@ describe("demo-data: attributionModels", () => {
     }
   });
 
+  it("should expose outcome-proof validation signals for attribution models", () => {
+    for (const m of attributionModels) {
+      expect(["platform_attribution", "incrementality_test", "marketing_mix_model"]).toContain(
+        m.privacySignals.validationMethod
+      );
+      expect(m.privacySignals.businessOutcomeKpi.length).toBeGreaterThan(0);
+      const holdout = m.privacySignals.incrementalityHoldoutShare;
+      if (holdout !== null) {
+        expect(holdout).toBeGreaterThan(0);
+        expect(holdout).toBeLessThanOrEqual(50);
+      }
+    }
+  });
+
+  it("cookieless-ready models should use outcome-proof validation, not platform-only attribution", () => {
+    const outcomeProofMethods = new Set(["incrementality_test", "marketing_mix_model"]);
+    for (const m of attributionModels.filter((model) => model.privacySignals.cookielessReady)) {
+      expect(outcomeProofMethods.has(m.privacySignals.validationMethod)).toBe(true);
+    }
+  });
+
+  it("should include an incrementality holdout for at least one user-level model", () => {
+    const tested = attributionModels.find((m) => m.privacySignals.validationMethod === "incrementality_test");
+    expect(tested).toBeDefined();
+    expect(tested!.privacySignals.identityResolutionMode).toBe("user_level");
+    expect(tested!.privacySignals.incrementalityHoldoutShare).toBeGreaterThan(0);
+  });
+
   it("cookieless-ready models should avoid weak identity-graph dependency", () => {
     for (const m of attributionModels.filter((model) => model.privacySignals.cookielessReady)) {
       const matchRate = m.privacySignals.identityGraphMatchRate;
