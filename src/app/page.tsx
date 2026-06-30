@@ -4,7 +4,7 @@ import { useMemo } from "react";
 import { clsx } from "clsx";
 import { campaigns, channels, contentAssets, attributionModels, aiGeneratedContent, computeMetrics } from "@/lib/demo-data";
 import { StatusDot, Badge, Card, ProgressBar, StatCard } from "@/components/ui";
-import type { Campaign, MeasurementRisk, MeasurementValidationMethod } from "@/lib/types";
+import type { Campaign, ConsentAuditTrailStatus, MeasurementRisk, MeasurementValidationMethod } from "@/lib/types";
 
 // ── Helpers ────────────────────────────────────────────────────────────────
 function formatCurrency(n: number): string {
@@ -59,6 +59,15 @@ function signalLossClass(risk: MeasurementRisk): string {
     high: "bg-red-50 text-red-700",
   };
   return map[risk];
+}
+
+function consentAuditClass(status: ConsentAuditTrailStatus): string {
+  const map: Record<ConsentAuditTrailStatus, string> = {
+    complete: "bg-emerald-50 text-emerald-700",
+    partial: "bg-amber-50 text-amber-700",
+    missing: "bg-red-50 text-red-700",
+  };
+  return map[status];
 }
 
 function validationMethodLabel(method: MeasurementValidationMethod): string {
@@ -157,8 +166,14 @@ function ChannelAttribution() {
         <span className="inline-flex items-center gap-1 rounded-full bg-blue-50 px-2 py-0.5 text-xs font-medium text-blue-600">
           1P Coverage: {model.privacySignals.firstPartyCoverage}%
         </span>
+        <span className="inline-flex items-center gap-1 rounded-full bg-teal-50 px-2 py-0.5 text-xs font-medium text-teal-700">
+          Server-side Events: {model.privacySignals.serverSideEventCoverage}%
+        </span>
         <span className="inline-flex items-center gap-1 rounded-full bg-amber-50 px-2 py-0.5 text-xs font-medium text-amber-600">
           Consented: {model.privacySignals.consentedEventShare}%
+        </span>
+        <span className={clsx("inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium", consentAuditClass(model.privacySignals.consentAuditTrailStatus))}>
+          Consent Audit: {model.privacySignals.consentAuditTrailStatus}
         </span>
         {model.privacySignals.modeledConversionShare > 0 && (
           <span className="inline-flex items-center gap-1 rounded-full bg-purple-50 px-2 py-0.5 text-xs font-medium text-purple-600">

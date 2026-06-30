@@ -278,8 +278,10 @@ export const attributionModels: AttributionModel[] = [
     accuracy: 94,
     privacySignals: {
       firstPartyCoverage: 87,
+      serverSideEventCoverage: 91,
       modeledConversionShare: 31,
       consentedEventShare: 76,
+      consentAuditTrailStatus: "complete",
       identityGraphMatchRate: 72,
       identityResolutionMode: "user_level",
       signalLossRisk: "low",
@@ -303,8 +305,10 @@ export const attributionModels: AttributionModel[] = [
     accuracy: 82,
     privacySignals: {
       firstPartyCoverage: 64,
+      serverSideEventCoverage: 52,
       modeledConversionShare: 18,
       consentedEventShare: 58,
+      consentAuditTrailStatus: "partial",
       identityGraphMatchRate: 58,
       identityResolutionMode: "user_level",
       signalLossRisk: "high",
@@ -328,8 +332,10 @@ export const attributionModels: AttributionModel[] = [
     accuracy: 89,
     privacySignals: {
       firstPartyCoverage: 96,
+      serverSideEventCoverage: 98,
       modeledConversionShare: 0,
       consentedEventShare: 94,
+      consentAuditTrailStatus: "complete",
       identityGraphMatchRate: null,
       identityResolutionMode: "aggregate_mmm",
       signalLossRisk: "low",

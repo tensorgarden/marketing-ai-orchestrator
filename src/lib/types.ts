@@ -5,6 +5,7 @@ export type AttributionModelType = "first_touch" | "last_touch" | "linear" | "ti
 export type IdentityResolutionMode = "user_level" | "aggregate_mmm";
 export type MeasurementRisk = "low" | "medium" | "high";
 export type MeasurementValidationMethod = "platform_attribution" | "incrementality_test" | "marketing_mix_model";
+export type ConsentAuditTrailStatus = "complete" | "partial" | "missing";
 export type AIContentStatus = "draft" | "review" | "approved" | "published";
 export type CampaignGoal = "awareness" | "lead_gen" | "conversion" | "retention" | "upsell";
 export type AISentiment = "positive" | "neutral" | "persuasive";
@@ -50,8 +51,10 @@ export interface AttributionModel {
   accuracy: number;
   privacySignals: {
     firstPartyCoverage: number;
+    serverSideEventCoverage: number;
     modeledConversionShare: number;
     consentedEventShare: number;
+    consentAuditTrailStatus: ConsentAuditTrailStatus;
     identityGraphMatchRate: number | null;
     identityResolutionMode: IdentityResolutionMode;
     signalLossRisk: MeasurementRisk;

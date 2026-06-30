@@ -103,6 +103,9 @@ describe("demo-data: attributionModels", () => {
       expect(m.privacySignals.firstPartyCoverage).toBeLessThanOrEqual(100);
       expect(m.privacySignals.consentedEventShare).toBeGreaterThanOrEqual(0);
       expect(m.privacySignals.consentedEventShare).toBeLessThanOrEqual(100);
+      expect(m.privacySignals.serverSideEventCoverage).toBeGreaterThanOrEqual(0);
+      expect(m.privacySignals.serverSideEventCoverage).toBeLessThanOrEqual(100);
+      expect(["complete", "partial", "missing"]).toContain(m.privacySignals.consentAuditTrailStatus);
       expect(m.privacySignals.modeledConversionShare).toBeGreaterThanOrEqual(0);
       expect(m.privacySignals.modeledConversionShare).toBeLessThanOrEqual(100);
       if (m.privacySignals.identityGraphMatchRate !== null) {
@@ -139,6 +142,13 @@ describe("demo-data: attributionModels", () => {
     const outcomeProofMethods = new Set(["incrementality_test", "marketing_mix_model"]);
     for (const m of attributionModels.filter((model) => model.privacySignals.cookielessReady)) {
       expect(outcomeProofMethods.has(m.privacySignals.validationMethod)).toBe(true);
+    }
+  });
+
+  it("cookieless-ready models should preserve server-side event evidence and consent audit trails", () => {
+    for (const m of attributionModels.filter((model) => model.privacySignals.cookielessReady)) {
+      expect(m.privacySignals.serverSideEventCoverage).toBeGreaterThanOrEqual(85);
+      expect(m.privacySignals.consentAuditTrailStatus).toBe("complete");
     }
   });
 
