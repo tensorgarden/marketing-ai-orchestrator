@@ -138,6 +138,33 @@ describe("demo-data: attributionModels", () => {
     }
   });
 
+  it("should define concrete incrementality test design metadata", () => {
+    for (const m of attributionModels) {
+      expect(["geo_holdout", "audience_holdout", "platform_lift", "none"]).toContain(
+        m.privacySignals.incrementalityTestDesign
+      );
+      const readout = m.privacySignals.incrementalityReadoutWindowDays;
+      if (readout !== null) {
+        expect(readout).toBeGreaterThanOrEqual(14);
+        expect(readout).toBeLessThanOrEqual(90);
+      }
+    }
+  });
+
+  it("incrementality-tested attribution should name a holdout design and readout window", () => {
+    for (const m of attributionModels.filter((model) => model.privacySignals.validationMethod === "incrementality_test")) {
+      expect(m.privacySignals.incrementalityTestDesign).not.toBe("none");
+      expect(m.privacySignals.incrementalityReadoutWindowDays).not.toBeNull();
+    }
+  });
+
+  it("platform-only attribution should not imply an incrementality holdout", () => {
+    for (const m of attributionModels.filter((model) => model.privacySignals.validationMethod === "platform_attribution")) {
+      expect(m.privacySignals.incrementalityTestDesign).toBe("none");
+      expect(m.privacySignals.incrementalityReadoutWindowDays).toBeNull();
+    }
+  });
+
   it("cookieless-ready models should use outcome-proof validation, not platform-only attribution", () => {
     const outcomeProofMethods = new Set(["incrementality_test", "marketing_mix_model"]);
     for (const m of attributionModels.filter((model) => model.privacySignals.cookielessReady)) {

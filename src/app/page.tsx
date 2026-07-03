@@ -4,7 +4,13 @@ import { useMemo } from "react";
 import { clsx } from "clsx";
 import { campaigns, channels, contentAssets, attributionModels, aiGeneratedContent, computeMetrics } from "@/lib/demo-data";
 import { StatusDot, Badge, Card, ProgressBar, StatCard } from "@/components/ui";
-import type { Campaign, ConsentAuditTrailStatus, MeasurementRisk, MeasurementValidationMethod } from "@/lib/types";
+import type {
+  Campaign,
+  ConsentAuditTrailStatus,
+  IncrementalityTestDesign,
+  MeasurementRisk,
+  MeasurementValidationMethod,
+} from "@/lib/types";
 
 // ── Helpers ────────────────────────────────────────────────────────────────
 function formatCurrency(n: number): string {
@@ -77,6 +83,16 @@ function validationMethodLabel(method: MeasurementValidationMethod): string {
     marketing_mix_model: "Marketing mix model",
   };
   return map[method];
+}
+
+function incrementalityTestLabel(design: IncrementalityTestDesign): string {
+  const map: Record<IncrementalityTestDesign, string> = {
+    geo_holdout: "Geo holdout",
+    audience_holdout: "Audience holdout",
+    platform_lift: "Platform lift",
+    none: "No holdout",
+  };
+  return map[design];
 }
 
 // ── Campaign Row ───────────────────────────────────────────────────────────
@@ -191,9 +207,19 @@ function ChannelAttribution() {
         <span className="inline-flex items-center gap-1 rounded-full bg-indigo-50 px-2 py-0.5 text-xs font-medium text-indigo-600">
           Validation: {validationMethodLabel(model.privacySignals.validationMethod)}
         </span>
+        {model.privacySignals.incrementalityTestDesign !== "none" && (
+          <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-700">
+            Test: {incrementalityTestLabel(model.privacySignals.incrementalityTestDesign)}
+          </span>
+        )}
         {model.privacySignals.incrementalityHoldoutShare !== null && (
           <span className="inline-flex items-center gap-1 rounded-full bg-cyan-50 px-2 py-0.5 text-xs font-medium text-cyan-700">
             Holdout: {model.privacySignals.incrementalityHoldoutShare}%
+          </span>
+        )}
+        {model.privacySignals.incrementalityReadoutWindowDays !== null && (
+          <span className="inline-flex items-center gap-1 rounded-full bg-lime-50 px-2 py-0.5 text-xs font-medium text-lime-700">
+            Readout: {model.privacySignals.incrementalityReadoutWindowDays}d
           </span>
         )}
         <span className="inline-flex items-center gap-1 rounded-full bg-slate-50 px-2 py-0.5 text-xs font-medium text-slate-600">
