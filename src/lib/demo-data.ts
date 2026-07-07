@@ -3,6 +3,8 @@ import {
   Channel,
   ContentAsset,
   AttributionModel,
+  AttributionDecisionReadiness,
+  AttributionDecisionUse,
   AIGeneratedContent,
   MarketingMetrics,
 } from "./types";
@@ -352,6 +354,43 @@ export const attributionModels: AttributionModel[] = [
     },
   },
 ];
+
+export function getAttributionDecisionReadiness(): AttributionDecisionReadiness[] {
+  return attributionModels.map((model) => {
+    const signals = model.privacySignals;
+    const blockers: string[] = [];
+
+    if (signals.validationMethod === "platform_attribution") {
+      blockers.push("Needs incrementality or MMM validation before budget decisions");
+    }
+
+    if (signals.identityResolutionMode === "user_level" && (signals.identityGraphMatchRate ?? 0) < 70) {
+      blockers.push("Identity graph match rate below 70%");
+    }
+
+    if (!signals.cookielessReady) {
+      blockers.push("Not cookieless ready");
+    }
+
+    if (signals.consentAuditTrailStatus !== "complete") {
+      blockers.push("Consent audit trail incomplete");
+    }
+
+    const decisionUse: AttributionDecisionUse =
+      blockers.length > 0
+        ? "diagnostic_only"
+        : signals.validationMethod === "marketing_mix_model"
+          ? "strategic_planning"
+          : "budget_ready";
+
+    return {
+      modelId: model.id,
+      modelName: model.name,
+      decisionUse,
+      blockers,
+    };
+  });
+}
 
 export const aiGeneratedContent: AIGeneratedContent[] = [
   {

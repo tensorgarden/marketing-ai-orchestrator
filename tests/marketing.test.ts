@@ -6,6 +6,7 @@ import {
   attributionModels,
   aiGeneratedContent,
   computeMetrics,
+  getAttributionDecisionReadiness,
 } from "@/lib/demo-data";
 
 describe("demo-data: campaigns", () => {
@@ -222,6 +223,27 @@ describe("demo-data: attributionModels", () => {
   it("should use a distinct attribution type per model — no two models share the same methodology", () => {
     const types = new Set(attributionModels.map((m) => m.type));
     expect(types.size).toBe(attributionModels.length);
+  });
+
+  it("should produce decision-readiness records for every attribution model", () => {
+    const readiness = getAttributionDecisionReadiness();
+    expect(readiness).toHaveLength(attributionModels.length);
+    expect(readiness.map((r) => r.modelId)).toEqual(attributionModels.map((m) => m.id));
+  });
+
+  it("should keep high signal-loss platform attribution diagnostic-only", () => {
+    const readiness = getAttributionDecisionReadiness();
+    const timeDecay = readiness.find((r) => r.modelName === "Time Decay Model");
+    expect(timeDecay).toBeDefined();
+    expect(timeDecay!.decisionUse).toBe("diagnostic_only");
+    expect(timeDecay!.blockers).toContain("Needs incrementality or MMM validation before budget decisions");
+    expect(timeDecay!.blockers).toContain("Identity graph match rate below 70%");
+  });
+
+  it("should separate incrementality-tested budget decisions from MMM strategic planning", () => {
+    const readiness = getAttributionDecisionReadiness();
+    expect(readiness.find((r) => r.modelName === "Data-Driven Attribution")?.decisionUse).toBe("budget_ready");
+    expect(readiness.find((r) => r.modelName === "Marketing Mix Model (MMM)")?.decisionUse).toBe("strategic_planning");
   });
 });
 
