@@ -125,6 +125,23 @@ describe("demo-data: attributionModels", () => {
     }
   });
 
+  it("should capture AI discovery evidence beyond referral clicks", () => {
+    const evidenceModes = new Set(attributionModels.map((model) => model.privacySignals.aiDiscoveryEvidence));
+    expect(evidenceModes).toContain("referral_clicks_only");
+    expect(evidenceModes).toContain("mention_citation_tracking");
+    expect(evidenceModes).toContain("brand_lift_study");
+
+    const readiness = getAttributionDecisionReadiness();
+    for (const model of attributionModels.filter(
+      (candidate) => candidate.privacySignals.aiDiscoveryEvidence === "referral_clicks_only"
+    )) {
+      expect(model.privacySignals.zeroClickInfluenceRisk).toBe("high");
+      const decision = readiness.find((record) => record.modelId === model.id);
+      expect(decision?.decisionUse).toBe("diagnostic_only");
+      expect(decision?.blockers).toContain("AI search influence limited to referral clicks");
+    }
+  });
+
   it("should expose outcome-proof validation signals for attribution models", () => {
     for (const m of attributionModels) {
       expect(["platform_attribution", "incrementality_test", "marketing_mix_model"]).toContain(

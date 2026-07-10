@@ -4,6 +4,7 @@ export type ContentType = "blog" | "social_post" | "email_campaign" | "landing_p
 export type AttributionModelType = "first_touch" | "last_touch" | "linear" | "time_decay" | "position_based" | "data_driven" | "marketing_mix";
 export type IdentityResolutionMode = "user_level" | "aggregate_mmm";
 export type MeasurementRisk = "low" | "medium" | "high";
+export type AIDiscoveryEvidence = "referral_clicks_only" | "mention_citation_tracking" | "brand_lift_study";
 export type MeasurementValidationMethod = "platform_attribution" | "incrementality_test" | "marketing_mix_model";
 export type AttributionDecisionUse = "budget_ready" | "diagnostic_only" | "strategic_planning";
 export type IncrementalityTestDesign = "geo_holdout" | "audience_holdout" | "platform_lift" | "none";
@@ -60,6 +61,8 @@ export interface AttributionModel {
     identityGraphMatchRate: number | null;
     identityResolutionMode: IdentityResolutionMode;
     signalLossRisk: MeasurementRisk;
+    aiDiscoveryEvidence: AIDiscoveryEvidence;
+    zeroClickInfluenceRisk: MeasurementRisk;
     validationMethod: MeasurementValidationMethod;
     incrementalityHoldoutShare: number | null;
     incrementalityTestDesign: IncrementalityTestDesign;

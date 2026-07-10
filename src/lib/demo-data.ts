@@ -287,6 +287,8 @@ export const attributionModels: AttributionModel[] = [
       identityGraphMatchRate: 72,
       identityResolutionMode: "user_level",
       signalLossRisk: "low",
+      aiDiscoveryEvidence: "mention_citation_tracking",
+      zeroClickInfluenceRisk: "medium",
       validationMethod: "incrementality_test",
       incrementalityHoldoutShare: 12,
       incrementalityTestDesign: "geo_holdout",
@@ -316,6 +318,8 @@ export const attributionModels: AttributionModel[] = [
       identityGraphMatchRate: 58,
       identityResolutionMode: "user_level",
       signalLossRisk: "high",
+      aiDiscoveryEvidence: "referral_clicks_only",
+      zeroClickInfluenceRisk: "high",
       validationMethod: "platform_attribution",
       incrementalityHoldoutShare: null,
       incrementalityTestDesign: "none",
@@ -345,6 +349,8 @@ export const attributionModels: AttributionModel[] = [
       identityGraphMatchRate: null,
       identityResolutionMode: "aggregate_mmm",
       signalLossRisk: "low",
+      aiDiscoveryEvidence: "brand_lift_study",
+      zeroClickInfluenceRisk: "low",
       validationMethod: "marketing_mix_model",
       incrementalityHoldoutShare: null,
       incrementalityTestDesign: "none",
@@ -366,6 +372,10 @@ export function getAttributionDecisionReadiness(): AttributionDecisionReadiness[
 
     if (signals.identityResolutionMode === "user_level" && (signals.identityGraphMatchRate ?? 0) < 70) {
       blockers.push("Identity graph match rate below 70%");
+    }
+
+    if (signals.aiDiscoveryEvidence === "referral_clicks_only") {
+      blockers.push("AI search influence limited to referral clicks");
     }
 
     if (!signals.cookielessReady) {

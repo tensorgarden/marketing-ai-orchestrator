@@ -5,6 +5,7 @@ import { clsx } from "clsx";
 import { campaigns, channels, contentAssets, attributionModels, aiGeneratedContent, computeMetrics } from "@/lib/demo-data";
 import { StatusDot, Badge, Card, ProgressBar, StatCard } from "@/components/ui";
 import type {
+  AIDiscoveryEvidence,
   Campaign,
   ConsentAuditTrailStatus,
   IncrementalityTestDesign,
@@ -65,6 +66,15 @@ function signalLossClass(risk: MeasurementRisk): string {
     high: "bg-red-50 text-red-700",
   };
   return map[risk];
+}
+
+function aiDiscoveryEvidenceLabel(evidence: AIDiscoveryEvidence): string {
+  const map: Record<AIDiscoveryEvidence, string> = {
+    referral_clicks_only: "Referral clicks only",
+    mention_citation_tracking: "Mentions + citations",
+    brand_lift_study: "Brand lift study",
+  };
+  return map[evidence];
 }
 
 function consentAuditClass(status: ConsentAuditTrailStatus): string {
@@ -203,6 +213,12 @@ function ChannelAttribution() {
         </span>
         <span className={clsx("inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium", signalLossClass(model.privacySignals.signalLossRisk))}>
           Signal Loss: {model.privacySignals.signalLossRisk}
+        </span>
+        <span className="inline-flex items-center gap-1 rounded-full bg-violet-50 px-2 py-0.5 text-xs font-medium text-violet-700">
+          AI discovery: {aiDiscoveryEvidenceLabel(model.privacySignals.aiDiscoveryEvidence)}
+        </span>
+        <span className={clsx("inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium", signalLossClass(model.privacySignals.zeroClickInfluenceRisk))}>
+          Zero-click risk: {model.privacySignals.zeroClickInfluenceRisk}
         </span>
         <span className="inline-flex items-center gap-1 rounded-full bg-indigo-50 px-2 py-0.5 text-xs font-medium text-indigo-600">
           Validation: {validationMethodLabel(model.privacySignals.validationMethod)}
