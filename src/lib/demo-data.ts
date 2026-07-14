@@ -293,6 +293,8 @@ export const attributionModels: AttributionModel[] = [
       incrementalityHoldoutShare: 12,
       incrementalityTestDesign: "geo_holdout",
       incrementalityReadoutWindowDays: 28,
+      conversionReportingLagHours: 15,
+      dataMaturity: "mature",
       businessOutcomeKpi: "Qualified pipeline revenue",
       cookielessReady: true,
     },
@@ -324,6 +326,8 @@ export const attributionModels: AttributionModel[] = [
       incrementalityHoldoutShare: null,
       incrementalityTestDesign: "none",
       incrementalityReadoutWindowDays: null,
+      conversionReportingLagHours: 72,
+      dataMaturity: "provisional",
       businessOutcomeKpi: "Attributed conversions",
       cookielessReady: false,
     },
@@ -355,6 +359,8 @@ export const attributionModels: AttributionModel[] = [
       incrementalityHoldoutShare: null,
       incrementalityTestDesign: "none",
       incrementalityReadoutWindowDays: null,
+      conversionReportingLagHours: null,
+      dataMaturity: "mature",
       businessOutcomeKpi: "Incremental revenue contribution",
       cookielessReady: true,
     },
@@ -380,6 +386,10 @@ export function getAttributionDecisionReadiness(): AttributionDecisionReadiness[
 
     if (!signals.cookielessReady) {
       blockers.push("Not cookieless ready");
+    }
+
+    if (signals.dataMaturity === "provisional") {
+      blockers.push("Conversion reporting window still provisional");
     }
 
     if (signals.consentAuditTrailStatus !== "complete") {

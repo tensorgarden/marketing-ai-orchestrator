@@ -183,6 +183,31 @@ describe("demo-data: attributionModels", () => {
     }
   });
 
+  it("should expose conversion reporting lag for user-level attribution", () => {
+    for (const m of attributionModels) {
+      const lag = m.privacySignals.conversionReportingLagHours;
+      if (m.privacySignals.identityResolutionMode === "user_level") {
+        expect(lag).not.toBeNull();
+        expect(lag).toBeGreaterThanOrEqual(0);
+        expect(lag).toBeLessThanOrEqual(168);
+      } else {
+        expect(lag).toBeNull();
+      }
+    }
+  });
+
+  it("should keep provisional conversion windows diagnostic-only", () => {
+    const readiness = getAttributionDecisionReadiness();
+    const provisionalModels = attributionModels.filter((model) => model.privacySignals.dataMaturity === "provisional");
+    expect(provisionalModels.length).toBeGreaterThan(0);
+
+    for (const model of provisionalModels) {
+      const decision = readiness.find((record) => record.modelId === model.id);
+      expect(decision?.decisionUse).toBe("diagnostic_only");
+      expect(decision?.blockers).toContain("Conversion reporting window still provisional");
+    }
+  });
+
   it("cookieless-ready models should use outcome-proof validation, not platform-only attribution", () => {
     const outcomeProofMethods = new Set(["incrementality_test", "marketing_mix_model"]);
     for (const m of attributionModels.filter((model) => model.privacySignals.cookielessReady)) {

@@ -238,6 +238,19 @@ function ChannelAttribution() {
             Readout: {model.privacySignals.incrementalityReadoutWindowDays}d
           </span>
         )}
+        {model.privacySignals.conversionReportingLagHours !== null && (
+          <span className="inline-flex items-center gap-1 rounded-full bg-orange-50 px-2 py-0.5 text-xs font-medium text-orange-700">
+            Conversion lag: {model.privacySignals.conversionReportingLagHours}h
+          </span>
+        )}
+        <span className={clsx(
+          "inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium",
+          model.privacySignals.dataMaturity === "mature"
+            ? "bg-emerald-50 text-emerald-700"
+            : "bg-amber-50 text-amber-700"
+        )}>
+          Data: {model.privacySignals.dataMaturity}
+        </span>
         <span className="inline-flex items-center gap-1 rounded-full bg-slate-50 px-2 py-0.5 text-xs font-medium text-slate-600">
           KPI: {model.privacySignals.businessOutcomeKpi}
         </span>
