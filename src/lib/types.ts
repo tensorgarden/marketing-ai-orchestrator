@@ -9,6 +9,7 @@ export type MeasurementValidationMethod = "platform_attribution" | "incrementali
 export type AttributionDecisionUse = "budget_ready" | "diagnostic_only" | "strategic_planning";
 export type IncrementalityTestDesign = "geo_holdout" | "audience_holdout" | "platform_lift" | "none";
 export type ConsentAuditTrailStatus = "complete" | "partial" | "missing";
+export type CleanRoomInteroperability = "admap_ready" | "proprietary_only" | "not_applicable";
 export type AttributionDataMaturity = "mature" | "provisional";
 export type AIContentStatus = "draft" | "review" | "approved" | "published";
 export type CampaignGoal = "awareness" | "lead_gen" | "conversion" | "retention" | "upsell";
@@ -59,6 +60,8 @@ export interface AttributionModel {
     modeledConversionShare: number;
     consentedEventShare: number;
     consentAuditTrailStatus: ConsentAuditTrailStatus;
+    cleanRoomInteroperability: CleanRoomInteroperability;
+    cleanRoomMatchRate: number | null;
     identityGraphMatchRate: number | null;
     identityResolutionMode: IdentityResolutionMode;
     signalLossRisk: MeasurementRisk;

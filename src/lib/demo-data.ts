@@ -284,6 +284,8 @@ export const attributionModels: AttributionModel[] = [
       modeledConversionShare: 31,
       consentedEventShare: 76,
       consentAuditTrailStatus: "complete",
+      cleanRoomInteroperability: "admap_ready",
+      cleanRoomMatchRate: 74,
       identityGraphMatchRate: 72,
       identityResolutionMode: "user_level",
       signalLossRisk: "low",
@@ -317,6 +319,8 @@ export const attributionModels: AttributionModel[] = [
       modeledConversionShare: 18,
       consentedEventShare: 58,
       consentAuditTrailStatus: "partial",
+      cleanRoomInteroperability: "proprietary_only",
+      cleanRoomMatchRate: 58,
       identityGraphMatchRate: 58,
       identityResolutionMode: "user_level",
       signalLossRisk: "high",
@@ -350,6 +354,8 @@ export const attributionModels: AttributionModel[] = [
       modeledConversionShare: 0,
       consentedEventShare: 94,
       consentAuditTrailStatus: "complete",
+      cleanRoomInteroperability: "not_applicable",
+      cleanRoomMatchRate: null,
       identityGraphMatchRate: null,
       identityResolutionMode: "aggregate_mmm",
       signalLossRisk: "low",
@@ -394,6 +400,10 @@ export function getAttributionDecisionReadiness(): AttributionDecisionReadiness[
 
     if (signals.consentAuditTrailStatus !== "complete") {
       blockers.push("Consent audit trail incomplete");
+    }
+
+    if (signals.cleanRoomInteroperability === "proprietary_only") {
+      blockers.push("Clean-room measurement limited to proprietary workflow");
     }
 
     const decisionUse: AttributionDecisionUse =

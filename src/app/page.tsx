@@ -7,6 +7,7 @@ import { StatusDot, Badge, Card, ProgressBar, StatCard } from "@/components/ui";
 import type {
   AIDiscoveryEvidence,
   Campaign,
+  CleanRoomInteroperability,
   ConsentAuditTrailStatus,
   IncrementalityTestDesign,
   MeasurementRisk,
@@ -82,6 +83,15 @@ function consentAuditClass(status: ConsentAuditTrailStatus): string {
     complete: "bg-emerald-50 text-emerald-700",
     partial: "bg-amber-50 text-amber-700",
     missing: "bg-red-50 text-red-700",
+  };
+  return map[status];
+}
+
+function cleanRoomInteroperabilityLabel(status: CleanRoomInteroperability): string {
+  const map: Record<CleanRoomInteroperability, string> = {
+    admap_ready: "ADMaP ready",
+    proprietary_only: "Proprietary only",
+    not_applicable: "Not applicable",
   };
   return map[status];
 }
@@ -201,6 +211,14 @@ function ChannelAttribution() {
         <span className={clsx("inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium", consentAuditClass(model.privacySignals.consentAuditTrailStatus))}>
           Consent Audit: {model.privacySignals.consentAuditTrailStatus}
         </span>
+        <span className="inline-flex items-center gap-1 rounded-full bg-sky-50 px-2 py-0.5 text-xs font-medium text-sky-700">
+          DCR: {cleanRoomInteroperabilityLabel(model.privacySignals.cleanRoomInteroperability)}
+        </span>
+        {model.privacySignals.cleanRoomMatchRate !== null && (
+          <span className="inline-flex items-center gap-1 rounded-full bg-cyan-50 px-2 py-0.5 text-xs font-medium text-cyan-700">
+            DCR Match: {model.privacySignals.cleanRoomMatchRate}%
+          </span>
+        )}
         {model.privacySignals.modeledConversionShare > 0 && (
           <span className="inline-flex items-center gap-1 rounded-full bg-purple-50 px-2 py-0.5 text-xs font-medium text-purple-600">
             Modeled: {model.privacySignals.modeledConversionShare}%

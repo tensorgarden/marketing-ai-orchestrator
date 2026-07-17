@@ -116,6 +116,38 @@ describe("demo-data: attributionModels", () => {
     }
   });
 
+  it("should distinguish interoperable clean-room measurement from proprietary workflows", () => {
+    const modes = new Set(attributionModels.map((model) => model.privacySignals.cleanRoomInteroperability));
+    expect(modes).toContain("admap_ready");
+    expect(modes).toContain("proprietary_only");
+    expect(modes).toContain("not_applicable");
+
+    for (const model of attributionModels) {
+      const matchRate = model.privacySignals.cleanRoomMatchRate;
+      if (model.privacySignals.cleanRoomInteroperability === "not_applicable") {
+        expect(matchRate).toBeNull();
+      } else {
+        expect(matchRate).not.toBeNull();
+        expect(matchRate).toBeGreaterThanOrEqual(0);
+        expect(matchRate).toBeLessThanOrEqual(100);
+      }
+    }
+  });
+
+  it("should keep proprietary-only clean-room evidence diagnostic-only", () => {
+    const proprietaryModels = attributionModels.filter(
+      (model) => model.privacySignals.cleanRoomInteroperability === "proprietary_only"
+    );
+    expect(proprietaryModels.length).toBeGreaterThan(0);
+
+    const readiness = getAttributionDecisionReadiness();
+    for (const model of proprietaryModels) {
+      const decision = readiness.find((record) => record.modelId === model.id);
+      expect(decision?.decisionUse).toBe("diagnostic_only");
+      expect(decision?.blockers).toContain("Clean-room measurement limited to proprietary workflow");
+    }
+  });
+
   it("should flag user-level models below 70% identity match as signal-loss risk", () => {
     for (const m of attributionModels) {
       const matchRate = m.privacySignals.identityGraphMatchRate;
