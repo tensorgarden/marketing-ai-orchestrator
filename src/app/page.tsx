@@ -12,6 +12,7 @@ import type {
   IncrementalityTestDesign,
   MeasurementRisk,
   MeasurementValidationMethod,
+  AttributionUncertaintyStatus,
 } from "@/lib/types";
 
 // ── Helpers ────────────────────────────────────────────────────────────────
@@ -113,6 +114,15 @@ function incrementalityTestLabel(design: IncrementalityTestDesign): string {
     none: "No holdout",
   };
   return map[design];
+}
+
+function roiUncertaintyClass(status: AttributionUncertaintyStatus): string {
+  const map: Record<AttributionUncertaintyStatus, string> = {
+    bounded: "bg-emerald-50 text-emerald-700",
+    wide: "bg-red-50 text-red-700",
+    not_estimated: "bg-slate-100 text-slate-600",
+  };
+  return map[status];
 }
 
 // ── Campaign Row ───────────────────────────────────────────────────────────
@@ -268,6 +278,14 @@ function ChannelAttribution() {
             : "bg-amber-50 text-amber-700"
         )}>
           Data: {model.privacySignals.dataMaturity}
+        </span>
+        {model.privacySignals.roiEstimateRange !== null && (
+          <span className="inline-flex items-center gap-1 rounded-full bg-fuchsia-50 px-2 py-0.5 text-xs font-medium text-fuchsia-700">
+            ROI range: {model.privacySignals.roiEstimateRange.lower}–{model.privacySignals.roiEstimateRange.upper}x ({model.privacySignals.roiEstimateRange.confidenceLevel}%)
+          </span>
+        )}
+        <span className={clsx("inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium", roiUncertaintyClass(model.privacySignals.roiUncertaintyStatus))}>
+          ROI uncertainty: {model.privacySignals.roiUncertaintyStatus.replace("_", " ")}
         </span>
         <span className="inline-flex items-center gap-1 rounded-full bg-slate-50 px-2 py-0.5 text-xs font-medium text-slate-600">
           KPI: {model.privacySignals.businessOutcomeKpi}

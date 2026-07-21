@@ -297,6 +297,8 @@ export const attributionModels: AttributionModel[] = [
       incrementalityReadoutWindowDays: 28,
       conversionReportingLagHours: 15,
       dataMaturity: "mature",
+      roiEstimateRange: { lower: 2.7, upper: 3.4, confidenceLevel: 95 },
+      roiUncertaintyStatus: "bounded",
       businessOutcomeKpi: "Qualified pipeline revenue",
       cookielessReady: true,
     },
@@ -332,6 +334,8 @@ export const attributionModels: AttributionModel[] = [
       incrementalityReadoutWindowDays: null,
       conversionReportingLagHours: 72,
       dataMaturity: "provisional",
+      roiEstimateRange: { lower: 0.6, upper: 3.1, confidenceLevel: 95 },
+      roiUncertaintyStatus: "wide",
       businessOutcomeKpi: "Attributed conversions",
       cookielessReady: false,
     },
@@ -367,6 +371,8 @@ export const attributionModels: AttributionModel[] = [
       incrementalityReadoutWindowDays: null,
       conversionReportingLagHours: null,
       dataMaturity: "mature",
+      roiEstimateRange: { lower: 2.1, upper: 3.3, confidenceLevel: 90 },
+      roiUncertaintyStatus: "bounded",
       businessOutcomeKpi: "Incremental revenue contribution",
       cookielessReady: true,
     },
@@ -396,6 +402,10 @@ export function getAttributionDecisionReadiness(): AttributionDecisionReadiness[
 
     if (signals.dataMaturity === "provisional") {
       blockers.push("Conversion reporting window still provisional");
+    }
+
+    if (signals.roiUncertaintyStatus === "wide") {
+      blockers.push("Wide ROI interval needs experiment calibration");
     }
 
     if (signals.consentAuditTrailStatus !== "complete") {

@@ -11,6 +11,7 @@ export type IncrementalityTestDesign = "geo_holdout" | "audience_holdout" | "pla
 export type ConsentAuditTrailStatus = "complete" | "partial" | "missing";
 export type CleanRoomInteroperability = "admap_ready" | "proprietary_only" | "not_applicable";
 export type AttributionDataMaturity = "mature" | "provisional";
+export type AttributionUncertaintyStatus = "bounded" | "wide" | "not_estimated";
 export type AIContentStatus = "draft" | "review" | "approved" | "published";
 export type CampaignGoal = "awareness" | "lead_gen" | "conversion" | "retention" | "upsell";
 export type AISentiment = "positive" | "neutral" | "persuasive";
@@ -73,6 +74,8 @@ export interface AttributionModel {
     incrementalityReadoutWindowDays: number | null;
     conversionReportingLagHours: number | null;
     dataMaturity: AttributionDataMaturity;
+    roiEstimateRange: { lower: number; upper: number; confidenceLevel: number } | null;
+    roiUncertaintyStatus: AttributionUncertaintyStatus;
     businessOutcomeKpi: string;
     cookielessReady: boolean;
   };

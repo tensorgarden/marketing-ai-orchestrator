@@ -240,6 +240,31 @@ describe("demo-data: attributionModels", () => {
     }
   });
 
+  it("should expose bounded ROI estimate intervals instead of point estimates alone", () => {
+    for (const model of attributionModels) {
+      const range = model.privacySignals.roiEstimateRange;
+      expect(range).not.toBeNull();
+      expect(range!.lower).toBeGreaterThanOrEqual(0);
+      expect(range!.upper).toBeGreaterThan(range!.lower);
+      expect(range!.confidenceLevel).toBeGreaterThanOrEqual(80);
+      expect(range!.confidenceLevel).toBeLessThanOrEqual(99);
+    }
+  });
+
+  it("should route wide ROI uncertainty to experiment calibration", () => {
+    const wideModels = attributionModels.filter(
+      (model) => model.privacySignals.roiUncertaintyStatus === "wide"
+    );
+    expect(wideModels.length).toBeGreaterThan(0);
+
+    const readiness = getAttributionDecisionReadiness();
+    for (const model of wideModels) {
+      const decision = readiness.find((record) => record.modelId === model.id);
+      expect(decision?.decisionUse).toBe("diagnostic_only");
+      expect(decision?.blockers).toContain("Wide ROI interval needs experiment calibration");
+    }
+  });
+
   it("cookieless-ready models should use outcome-proof validation, not platform-only attribution", () => {
     const outcomeProofMethods = new Set(["incrementality_test", "marketing_mix_model"]);
     for (const m of attributionModels.filter((model) => model.privacySignals.cookielessReady)) {
