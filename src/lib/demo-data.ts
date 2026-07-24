@@ -297,6 +297,8 @@ export const attributionModels: AttributionModel[] = [
       incrementalityReadoutWindowDays: 28,
       conversionReportingLagHours: 15,
       dataMaturity: "mature",
+      marginalRoiEstimate: 1.8,
+      budgetResponseStatus: "headroom",
       roiEstimateRange: { lower: 2.7, upper: 3.4, confidenceLevel: 95 },
       roiUncertaintyStatus: "bounded",
       businessOutcomeKpi: "Qualified pipeline revenue",
@@ -334,6 +336,8 @@ export const attributionModels: AttributionModel[] = [
       incrementalityReadoutWindowDays: null,
       conversionReportingLagHours: 72,
       dataMaturity: "provisional",
+      marginalRoiEstimate: 0.7,
+      budgetResponseStatus: "diminishing_returns",
       roiEstimateRange: { lower: 0.6, upper: 3.1, confidenceLevel: 95 },
       roiUncertaintyStatus: "wide",
       businessOutcomeKpi: "Attributed conversions",
@@ -371,6 +375,8 @@ export const attributionModels: AttributionModel[] = [
       incrementalityReadoutWindowDays: null,
       conversionReportingLagHours: null,
       dataMaturity: "mature",
+      marginalRoiEstimate: 1.4,
+      budgetResponseStatus: "headroom",
       roiEstimateRange: { lower: 2.1, upper: 3.3, confidenceLevel: 90 },
       roiUncertaintyStatus: "bounded",
       businessOutcomeKpi: "Incremental revenue contribution",
@@ -406,6 +412,10 @@ export function getAttributionDecisionReadiness(): AttributionDecisionReadiness[
 
     if (signals.roiUncertaintyStatus === "wide") {
       blockers.push("Wide ROI interval needs experiment calibration");
+    }
+
+    if (signals.budgetResponseStatus === "diminishing_returns") {
+      blockers.push("Marginal ROI indicates diminishing returns");
     }
 
     if (signals.consentAuditTrailStatus !== "complete") {

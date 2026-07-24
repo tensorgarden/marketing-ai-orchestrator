@@ -13,6 +13,7 @@ import type {
   MeasurementRisk,
   MeasurementValidationMethod,
   AttributionUncertaintyStatus,
+  BudgetResponseStatus,
 } from "@/lib/types";
 
 // ── Helpers ────────────────────────────────────────────────────────────────
@@ -114,6 +115,15 @@ function incrementalityTestLabel(design: IncrementalityTestDesign): string {
     none: "No holdout",
   };
   return map[design];
+}
+
+function budgetResponseClass(status: BudgetResponseStatus): string {
+  const map: Record<BudgetResponseStatus, string> = {
+    headroom: "bg-emerald-50 text-emerald-700",
+    diminishing_returns: "bg-red-50 text-red-700",
+    not_estimated: "bg-slate-100 text-slate-600",
+  };
+  return map[status];
 }
 
 function roiUncertaintyClass(status: AttributionUncertaintyStatus): string {
@@ -278,6 +288,14 @@ function ChannelAttribution() {
             : "bg-amber-50 text-amber-700"
         )}>
           Data: {model.privacySignals.dataMaturity}
+        </span>
+        {model.privacySignals.marginalRoiEstimate !== null && (
+          <span className="inline-flex items-center gap-1 rounded-full bg-blue-50 px-2 py-0.5 text-xs font-medium text-blue-700">
+            Marginal ROI: {model.privacySignals.marginalRoiEstimate}x
+          </span>
+        )}
+        <span className={clsx("inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium", budgetResponseClass(model.privacySignals.budgetResponseStatus))}>
+          Budget response: {model.privacySignals.budgetResponseStatus.replace("_", " ")}
         </span>
         {model.privacySignals.roiEstimateRange !== null && (
           <span className="inline-flex items-center gap-1 rounded-full bg-fuchsia-50 px-2 py-0.5 text-xs font-medium text-fuchsia-700">

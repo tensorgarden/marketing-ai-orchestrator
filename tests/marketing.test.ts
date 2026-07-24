@@ -240,6 +240,36 @@ describe("demo-data: attributionModels", () => {
     }
   });
 
+  it("should expose marginal ROI and response-curve saturation for budget decisions", () => {
+    for (const model of attributionModels) {
+      const marginalRoi = model.privacySignals.marginalRoiEstimate;
+      expect(["headroom", "diminishing_returns", "not_estimated"]).toContain(
+        model.privacySignals.budgetResponseStatus
+      );
+
+      if (model.privacySignals.budgetResponseStatus === "not_estimated") {
+        expect(marginalRoi).toBeNull();
+      } else {
+        expect(marginalRoi).not.toBeNull();
+        expect(marginalRoi).toBeGreaterThanOrEqual(0);
+      }
+    }
+  });
+
+  it("should route diminishing marginal returns away from budget-ready use", () => {
+    const saturatedModels = attributionModels.filter(
+      (model) => model.privacySignals.budgetResponseStatus === "diminishing_returns"
+    );
+    expect(saturatedModels.length).toBeGreaterThan(0);
+
+    const readiness = getAttributionDecisionReadiness();
+    for (const model of saturatedModels) {
+      const decision = readiness.find((record) => record.modelId === model.id);
+      expect(decision?.decisionUse).toBe("diagnostic_only");
+      expect(decision?.blockers).toContain("Marginal ROI indicates diminishing returns");
+    }
+  });
+
   it("should expose bounded ROI estimate intervals instead of point estimates alone", () => {
     for (const model of attributionModels) {
       const range = model.privacySignals.roiEstimateRange;
