@@ -14,6 +14,7 @@ import type {
   MeasurementValidationMethod,
   AttributionUncertaintyStatus,
   BudgetResponseStatus,
+  FutureScenarioBasis,
 } from "@/lib/types";
 
 // ── Helpers ────────────────────────────────────────────────────────────────
@@ -124,6 +125,14 @@ function budgetResponseClass(status: BudgetResponseStatus): string {
     not_estimated: "bg-slate-100 text-slate-600",
   };
   return map[status];
+}
+
+function futureScenarioBasisClass(basis: FutureScenarioBasis): string {
+  const map: Record<FutureScenarioBasis, string> = {
+    current_inputs: "bg-emerald-50 text-emerald-700",
+    historical_defaults: "bg-amber-50 text-amber-700",
+  };
+  return map[basis];
 }
 
 function roiUncertaintyClass(status: AttributionUncertaintyStatus): string {
@@ -296,6 +305,9 @@ function ChannelAttribution() {
         )}
         <span className={clsx("inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium", budgetResponseClass(model.privacySignals.budgetResponseStatus))}>
           Budget response: {model.privacySignals.budgetResponseStatus.replace("_", " ")}
+        </span>
+        <span className={clsx("inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium", futureScenarioBasisClass(model.privacySignals.futureScenarioBasis))}>
+          Scenario basis: {model.privacySignals.futureScenarioBasis.replace("_", " ")}
         </span>
         {model.privacySignals.roiEstimateRange !== null && (
           <span className="inline-flex items-center gap-1 rounded-full bg-fuchsia-50 px-2 py-0.5 text-xs font-medium text-fuchsia-700">

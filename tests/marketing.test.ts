@@ -270,6 +270,32 @@ describe("demo-data: attributionModels", () => {
     }
   });
 
+  it("should disclose the assumption basis for future budget scenarios", () => {
+    const bases = new Set(attributionModels.map((model) => model.privacySignals.futureScenarioBasis));
+    expect(bases).toContain("current_inputs");
+    expect(bases).toContain("historical_defaults");
+
+    for (const model of attributionModels) {
+      expect(["current_inputs", "historical_defaults"]).toContain(
+        model.privacySignals.futureScenarioBasis
+      );
+    }
+  });
+
+  it("should keep historical-default budget scenarios diagnostic-only", () => {
+    const historicalModels = attributionModels.filter(
+      (model) => model.privacySignals.futureScenarioBasis === "historical_defaults"
+    );
+    expect(historicalModels.length).toBeGreaterThan(0);
+
+    const readiness = getAttributionDecisionReadiness();
+    for (const model of historicalModels) {
+      const decision = readiness.find((record) => record.modelId === model.id);
+      expect(decision?.decisionUse).toBe("diagnostic_only");
+      expect(decision?.blockers).toContain("Future budget scenario still uses historical assumptions");
+    }
+  });
+
   it("should expose bounded ROI estimate intervals instead of point estimates alone", () => {
     for (const model of attributionModels) {
       const range = model.privacySignals.roiEstimateRange;

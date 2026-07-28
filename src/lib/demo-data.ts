@@ -299,6 +299,7 @@ export const attributionModels: AttributionModel[] = [
       dataMaturity: "mature",
       marginalRoiEstimate: 1.8,
       budgetResponseStatus: "headroom",
+      futureScenarioBasis: "current_inputs",
       roiEstimateRange: { lower: 2.7, upper: 3.4, confidenceLevel: 95 },
       roiUncertaintyStatus: "bounded",
       businessOutcomeKpi: "Qualified pipeline revenue",
@@ -338,6 +339,7 @@ export const attributionModels: AttributionModel[] = [
       dataMaturity: "provisional",
       marginalRoiEstimate: 0.7,
       budgetResponseStatus: "diminishing_returns",
+      futureScenarioBasis: "historical_defaults",
       roiEstimateRange: { lower: 0.6, upper: 3.1, confidenceLevel: 95 },
       roiUncertaintyStatus: "wide",
       businessOutcomeKpi: "Attributed conversions",
@@ -377,6 +379,7 @@ export const attributionModels: AttributionModel[] = [
       dataMaturity: "mature",
       marginalRoiEstimate: 1.4,
       budgetResponseStatus: "headroom",
+      futureScenarioBasis: "current_inputs",
       roiEstimateRange: { lower: 2.1, upper: 3.3, confidenceLevel: 90 },
       roiUncertaintyStatus: "bounded",
       businessOutcomeKpi: "Incremental revenue contribution",
@@ -416,6 +419,10 @@ export function getAttributionDecisionReadiness(): AttributionDecisionReadiness[
 
     if (signals.budgetResponseStatus === "diminishing_returns") {
       blockers.push("Marginal ROI indicates diminishing returns");
+    }
+
+    if (signals.futureScenarioBasis === "historical_defaults") {
+      blockers.push("Future budget scenario still uses historical assumptions");
     }
 
     if (signals.consentAuditTrailStatus !== "complete") {

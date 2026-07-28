@@ -13,6 +13,7 @@ export type CleanRoomInteroperability = "admap_ready" | "proprietary_only" | "no
 export type AttributionDataMaturity = "mature" | "provisional";
 export type AttributionUncertaintyStatus = "bounded" | "wide" | "not_estimated";
 export type BudgetResponseStatus = "headroom" | "diminishing_returns" | "not_estimated";
+export type FutureScenarioBasis = "current_inputs" | "historical_defaults";
 export type AIContentStatus = "draft" | "review" | "approved" | "published";
 export type CampaignGoal = "awareness" | "lead_gen" | "conversion" | "retention" | "upsell";
 export type AISentiment = "positive" | "neutral" | "persuasive";
@@ -77,6 +78,7 @@ export interface AttributionModel {
     dataMaturity: AttributionDataMaturity;
     marginalRoiEstimate: number | null;
     budgetResponseStatus: BudgetResponseStatus;
+    futureScenarioBasis: FutureScenarioBasis;
     roiEstimateRange: { lower: number; upper: number; confidenceLevel: number } | null;
     roiUncertaintyStatus: AttributionUncertaintyStatus;
     businessOutcomeKpi: string;
