@@ -14,6 +14,7 @@ export type AttributionDataMaturity = "mature" | "provisional";
 export type AttributionUncertaintyStatus = "bounded" | "wide" | "not_estimated";
 export type BudgetResponseStatus = "headroom" | "diminishing_returns" | "not_estimated";
 export type FutureScenarioBasis = "current_inputs" | "historical_defaults";
+export type PredictiveValidationStatus = "passed" | "needs_review" | "not_available";
 export type AIContentStatus = "draft" | "review" | "approved" | "published";
 export type CampaignGoal = "awareness" | "lead_gen" | "conversion" | "retention" | "upsell";
 export type AISentiment = "positive" | "neutral" | "persuasive";
@@ -79,6 +80,8 @@ export interface AttributionModel {
     marginalRoiEstimate: number | null;
     budgetResponseStatus: BudgetResponseStatus;
     futureScenarioBasis: FutureScenarioBasis;
+    holdoutMape: number | null;
+    predictiveValidationStatus: PredictiveValidationStatus;
     roiEstimateRange: { lower: number; upper: number; confidenceLevel: number } | null;
     roiUncertaintyStatus: AttributionUncertaintyStatus;
     businessOutcomeKpi: string;

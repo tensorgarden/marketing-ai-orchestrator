@@ -300,6 +300,8 @@ export const attributionModels: AttributionModel[] = [
       marginalRoiEstimate: 1.8,
       budgetResponseStatus: "headroom",
       futureScenarioBasis: "current_inputs",
+      holdoutMape: 8.4,
+      predictiveValidationStatus: "passed",
       roiEstimateRange: { lower: 2.7, upper: 3.4, confidenceLevel: 95 },
       roiUncertaintyStatus: "bounded",
       businessOutcomeKpi: "Qualified pipeline revenue",
@@ -340,6 +342,8 @@ export const attributionModels: AttributionModel[] = [
       marginalRoiEstimate: 0.7,
       budgetResponseStatus: "diminishing_returns",
       futureScenarioBasis: "historical_defaults",
+      holdoutMape: 21.7,
+      predictiveValidationStatus: "needs_review",
       roiEstimateRange: { lower: 0.6, upper: 3.1, confidenceLevel: 95 },
       roiUncertaintyStatus: "wide",
       businessOutcomeKpi: "Attributed conversions",
@@ -380,6 +384,8 @@ export const attributionModels: AttributionModel[] = [
       marginalRoiEstimate: 1.4,
       budgetResponseStatus: "headroom",
       futureScenarioBasis: "current_inputs",
+      holdoutMape: 9.6,
+      predictiveValidationStatus: "passed",
       roiEstimateRange: { lower: 2.1, upper: 3.3, confidenceLevel: 90 },
       roiUncertaintyStatus: "bounded",
       businessOutcomeKpi: "Incremental revenue contribution",
@@ -423,6 +429,14 @@ export function getAttributionDecisionReadiness(): AttributionDecisionReadiness[
 
     if (signals.futureScenarioBasis === "historical_defaults") {
       blockers.push("Future budget scenario still uses historical assumptions");
+    }
+
+    if (signals.predictiveValidationStatus === "needs_review") {
+      blockers.push("Out-of-sample predictive error needs review");
+    }
+
+    if (signals.predictiveValidationStatus === "not_available") {
+      blockers.push("Out-of-sample predictive validation unavailable");
     }
 
     if (signals.consentAuditTrailStatus !== "complete") {

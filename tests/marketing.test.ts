@@ -296,6 +296,41 @@ describe("demo-data: attributionModels", () => {
     }
   });
 
+  it("should expose out-of-sample predictive checks as model-health evidence", () => {
+    const statuses = new Set(
+      attributionModels.map((model) => model.privacySignals.predictiveValidationStatus)
+    );
+    expect(statuses).toContain("passed");
+    expect(statuses).toContain("needs_review");
+
+    for (const model of attributionModels) {
+      const status = model.privacySignals.predictiveValidationStatus;
+      const holdoutMape = model.privacySignals.holdoutMape;
+      expect(["passed", "needs_review", "not_available"]).toContain(status);
+
+      if (status === "not_available") {
+        expect(holdoutMape).toBeNull();
+      } else {
+        expect(holdoutMape).not.toBeNull();
+        expect(holdoutMape).toBeGreaterThanOrEqual(0);
+      }
+    }
+  });
+
+  it("should keep predictive holdout review gaps diagnostic-only", () => {
+    const reviewModels = attributionModels.filter(
+      (model) => model.privacySignals.predictiveValidationStatus === "needs_review"
+    );
+    expect(reviewModels.length).toBeGreaterThan(0);
+
+    const readiness = getAttributionDecisionReadiness();
+    for (const model of reviewModels) {
+      const decision = readiness.find((record) => record.modelId === model.id);
+      expect(decision?.decisionUse).toBe("diagnostic_only");
+      expect(decision?.blockers).toContain("Out-of-sample predictive error needs review");
+    }
+  });
+
   it("should expose bounded ROI estimate intervals instead of point estimates alone", () => {
     for (const model of attributionModels) {
       const range = model.privacySignals.roiEstimateRange;

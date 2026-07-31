@@ -15,6 +15,7 @@ import type {
   AttributionUncertaintyStatus,
   BudgetResponseStatus,
   FutureScenarioBasis,
+  PredictiveValidationStatus,
 } from "@/lib/types";
 
 // ── Helpers ────────────────────────────────────────────────────────────────
@@ -133,6 +134,15 @@ function futureScenarioBasisClass(basis: FutureScenarioBasis): string {
     historical_defaults: "bg-amber-50 text-amber-700",
   };
   return map[basis];
+}
+
+function predictiveValidationClass(status: PredictiveValidationStatus): string {
+  const map: Record<PredictiveValidationStatus, string> = {
+    passed: "bg-emerald-50 text-emerald-700",
+    needs_review: "bg-amber-50 text-amber-700",
+    not_available: "bg-slate-100 text-slate-600",
+  };
+  return map[status];
 }
 
 function roiUncertaintyClass(status: AttributionUncertaintyStatus): string {
@@ -309,6 +319,14 @@ function ChannelAttribution() {
         <span className={clsx("inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium", futureScenarioBasisClass(model.privacySignals.futureScenarioBasis))}>
           Scenario basis: {model.privacySignals.futureScenarioBasis.replace("_", " ")}
         </span>
+        <span className={clsx("inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium", predictiveValidationClass(model.privacySignals.predictiveValidationStatus))}>
+          Predictive check: {model.privacySignals.predictiveValidationStatus.replace("_", " ")}
+        </span>
+        {model.privacySignals.holdoutMape !== null && (
+          <span className="inline-flex items-center gap-1 rounded-full bg-sky-50 px-2 py-0.5 text-xs font-medium text-sky-700">
+            Holdout MAPE: {model.privacySignals.holdoutMape}%
+          </span>
+        )}
         {model.privacySignals.roiEstimateRange !== null && (
           <span className="inline-flex items-center gap-1 rounded-full bg-fuchsia-50 px-2 py-0.5 text-xs font-medium text-fuchsia-700">
             ROI range: {model.privacySignals.roiEstimateRange.lower}–{model.privacySignals.roiEstimateRange.upper}x ({model.privacySignals.roiEstimateRange.confidenceLevel}%)
