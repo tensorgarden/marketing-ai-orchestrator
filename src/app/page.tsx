@@ -16,6 +16,7 @@ import type {
   BudgetResponseStatus,
   FutureScenarioBasis,
   PredictiveValidationStatus,
+  HoldoutIntegrityStatus,
 } from "@/lib/types";
 
 // ── Helpers ────────────────────────────────────────────────────────────────
@@ -141,6 +142,15 @@ function predictiveValidationClass(status: PredictiveValidationStatus): string {
     passed: "bg-emerald-50 text-emerald-700",
     needs_review: "bg-amber-50 text-amber-700",
     not_available: "bg-slate-100 text-slate-600",
+  };
+  return map[status];
+}
+
+function holdoutIntegrityClass(status: HoldoutIntegrityStatus): string {
+  const map: Record<HoldoutIntegrityStatus, string> = {
+    verified_clean: "bg-emerald-50 text-emerald-700",
+    contamination_suspected: "bg-red-50 text-red-700",
+    not_assessed: "bg-slate-100 text-slate-600",
   };
   return map[status];
 }
@@ -321,6 +331,9 @@ function ChannelAttribution() {
         </span>
         <span className={clsx("inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium", predictiveValidationClass(model.privacySignals.predictiveValidationStatus))}>
           Predictive check: {model.privacySignals.predictiveValidationStatus.replace("_", " ")}
+        </span>
+        <span className={clsx("inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium", holdoutIntegrityClass(model.privacySignals.holdoutIntegrityStatus))}>
+          Holdout integrity: {model.privacySignals.holdoutIntegrityStatus.replace("_", " ")}
         </span>
         {model.privacySignals.holdoutMape !== null && (
           <span className="inline-flex items-center gap-1 rounded-full bg-sky-50 px-2 py-0.5 text-xs font-medium text-sky-700">

@@ -331,6 +331,37 @@ describe("demo-data: attributionModels", () => {
     }
   });
 
+  it("should track holdout integrity for incrementality evidence", () => {
+    const statuses = new Set(
+      attributionModels.map((model) => model.privacySignals.holdoutIntegrityStatus)
+    );
+    expect(statuses).toContain("verified_clean");
+    expect(statuses).toContain("contamination_suspected");
+
+    for (const model of attributionModels) {
+      const status = model.privacySignals.holdoutIntegrityStatus;
+      expect(["verified_clean", "contamination_suspected", "not_assessed"]).toContain(status);
+
+      if (status === "verified_clean") {
+        expect(model.privacySignals.incrementalityTestDesign).not.toBe("none");
+      }
+    }
+  });
+
+  it("should keep suspected holdout contamination diagnostic-only", () => {
+    const contaminatedModels = attributionModels.filter(
+      (model) => model.privacySignals.holdoutIntegrityStatus === "contamination_suspected"
+    );
+    expect(contaminatedModels.length).toBeGreaterThan(0);
+
+    const readiness = getAttributionDecisionReadiness();
+    for (const model of contaminatedModels) {
+      const decision = readiness.find((record) => record.modelId === model.id);
+      expect(decision?.decisionUse).toBe("diagnostic_only");
+      expect(decision?.blockers).toContain("Holdout contamination suspected; lift estimate unreliable");
+    }
+  });
+
   it("should expose bounded ROI estimate intervals instead of point estimates alone", () => {
     for (const model of attributionModels) {
       const range = model.privacySignals.roiEstimateRange;

@@ -302,6 +302,7 @@ export const attributionModels: AttributionModel[] = [
       futureScenarioBasis: "current_inputs",
       holdoutMape: 8.4,
       predictiveValidationStatus: "passed",
+      holdoutIntegrityStatus: "verified_clean",
       roiEstimateRange: { lower: 2.7, upper: 3.4, confidenceLevel: 95 },
       roiUncertaintyStatus: "bounded",
       businessOutcomeKpi: "Qualified pipeline revenue",
@@ -344,6 +345,7 @@ export const attributionModels: AttributionModel[] = [
       futureScenarioBasis: "historical_defaults",
       holdoutMape: 21.7,
       predictiveValidationStatus: "needs_review",
+      holdoutIntegrityStatus: "contamination_suspected",
       roiEstimateRange: { lower: 0.6, upper: 3.1, confidenceLevel: 95 },
       roiUncertaintyStatus: "wide",
       businessOutcomeKpi: "Attributed conversions",
@@ -386,6 +388,7 @@ export const attributionModels: AttributionModel[] = [
       futureScenarioBasis: "current_inputs",
       holdoutMape: 9.6,
       predictiveValidationStatus: "passed",
+      holdoutIntegrityStatus: "not_assessed",
       roiEstimateRange: { lower: 2.1, upper: 3.3, confidenceLevel: 90 },
       roiUncertaintyStatus: "bounded",
       businessOutcomeKpi: "Incremental revenue contribution",
@@ -437,6 +440,10 @@ export function getAttributionDecisionReadiness(): AttributionDecisionReadiness[
 
     if (signals.predictiveValidationStatus === "not_available") {
       blockers.push("Out-of-sample predictive validation unavailable");
+    }
+
+    if (signals.holdoutIntegrityStatus === "contamination_suspected") {
+      blockers.push("Holdout contamination suspected; lift estimate unreliable");
     }
 
     if (signals.consentAuditTrailStatus !== "complete") {
