@@ -16,6 +16,7 @@ export type BudgetResponseStatus = "headroom" | "diminishing_returns" | "not_est
 export type FutureScenarioBasis = "current_inputs" | "historical_defaults";
 export type PredictiveValidationStatus = "passed" | "needs_review" | "not_available";
 export type HoldoutIntegrityStatus = "verified_clean" | "contamination_suspected" | "not_assessed";
+export type ExperimentCalibrationStatus = "experiment_calibrated" | "uncalibrated";
 export type AIContentStatus = "draft" | "review" | "approved" | "published";
 export type CampaignGoal = "awareness" | "lead_gen" | "conversion" | "retention" | "upsell";
 export type AISentiment = "positive" | "neutral" | "persuasive";
@@ -84,6 +85,7 @@ export interface AttributionModel {
     holdoutMape: number | null;
     predictiveValidationStatus: PredictiveValidationStatus;
     holdoutIntegrityStatus: HoldoutIntegrityStatus;
+    experimentCalibrationStatus: ExperimentCalibrationStatus;
     roiEstimateRange: { lower: number; upper: number; confidenceLevel: number } | null;
     roiUncertaintyStatus: AttributionUncertaintyStatus;
     businessOutcomeKpi: string;

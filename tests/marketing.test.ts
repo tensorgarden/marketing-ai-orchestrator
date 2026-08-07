@@ -466,6 +466,34 @@ describe("demo-data: attributionModels", () => {
     expect(readiness.find((r) => r.modelName === "Data-Driven Attribution")?.decisionUse).toBe("budget_ready");
     expect(readiness.find((r) => r.modelName === "Marketing Mix Model (MMM)")?.decisionUse).toBe("strategic_planning");
   });
+
+  it("should disclose whether ROI estimates are calibrated with experiment priors", () => {
+    const statuses = new Set(
+      attributionModels.map((model) => model.privacySignals.experimentCalibrationStatus)
+    );
+    expect(statuses).toContain("experiment_calibrated");
+    expect(statuses).toContain("uncalibrated");
+
+    for (const model of attributionModels) {
+      expect(["experiment_calibrated", "uncalibrated"]).toContain(
+        model.privacySignals.experimentCalibrationStatus
+      );
+    }
+  });
+
+  it("should keep uncalibrated ROI estimates diagnostic-only", () => {
+    const uncalibratedModels = attributionModels.filter(
+      (model) => model.privacySignals.experimentCalibrationStatus === "uncalibrated"
+    );
+    expect(uncalibratedModels.length).toBeGreaterThan(0);
+
+    const readiness = getAttributionDecisionReadiness();
+    for (const model of uncalibratedModels) {
+      const decision = readiness.find((record) => record.modelId === model.id);
+      expect(decision?.decisionUse).toBe("diagnostic_only");
+      expect(decision?.blockers).toContain("ROI estimates not calibrated with incrementality experiments");
+    }
+  });
 });
 
 describe("demo-data: aiGeneratedContent", () => {

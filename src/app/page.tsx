@@ -17,6 +17,7 @@ import type {
   FutureScenarioBasis,
   PredictiveValidationStatus,
   HoldoutIntegrityStatus,
+  ExperimentCalibrationStatus,
 } from "@/lib/types";
 
 // ── Helpers ────────────────────────────────────────────────────────────────
@@ -151,6 +152,14 @@ function holdoutIntegrityClass(status: HoldoutIntegrityStatus): string {
     verified_clean: "bg-emerald-50 text-emerald-700",
     contamination_suspected: "bg-red-50 text-red-700",
     not_assessed: "bg-slate-100 text-slate-600",
+  };
+  return map[status];
+}
+
+function experimentCalibrationClass(status: ExperimentCalibrationStatus): string {
+  const map: Record<ExperimentCalibrationStatus, string> = {
+    experiment_calibrated: "bg-emerald-50 text-emerald-700",
+    uncalibrated: "bg-amber-50 text-amber-700",
   };
   return map[status];
 }
@@ -334,6 +343,9 @@ function ChannelAttribution() {
         </span>
         <span className={clsx("inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium", holdoutIntegrityClass(model.privacySignals.holdoutIntegrityStatus))}>
           Holdout integrity: {model.privacySignals.holdoutIntegrityStatus.replace("_", " ")}
+        </span>
+        <span className={clsx("inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium", experimentCalibrationClass(model.privacySignals.experimentCalibrationStatus))}>
+          Calibration: {model.privacySignals.experimentCalibrationStatus === "experiment_calibrated" ? "experiment priors" : "uncalibrated"}
         </span>
         {model.privacySignals.holdoutMape !== null && (
           <span className="inline-flex items-center gap-1 rounded-full bg-sky-50 px-2 py-0.5 text-xs font-medium text-sky-700">

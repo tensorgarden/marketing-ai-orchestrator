@@ -303,6 +303,7 @@ export const attributionModels: AttributionModel[] = [
       holdoutMape: 8.4,
       predictiveValidationStatus: "passed",
       holdoutIntegrityStatus: "verified_clean",
+      experimentCalibrationStatus: "experiment_calibrated",
       roiEstimateRange: { lower: 2.7, upper: 3.4, confidenceLevel: 95 },
       roiUncertaintyStatus: "bounded",
       businessOutcomeKpi: "Qualified pipeline revenue",
@@ -346,6 +347,7 @@ export const attributionModels: AttributionModel[] = [
       holdoutMape: 21.7,
       predictiveValidationStatus: "needs_review",
       holdoutIntegrityStatus: "contamination_suspected",
+      experimentCalibrationStatus: "uncalibrated",
       roiEstimateRange: { lower: 0.6, upper: 3.1, confidenceLevel: 95 },
       roiUncertaintyStatus: "wide",
       businessOutcomeKpi: "Attributed conversions",
@@ -389,6 +391,7 @@ export const attributionModels: AttributionModel[] = [
       holdoutMape: 9.6,
       predictiveValidationStatus: "passed",
       holdoutIntegrityStatus: "not_assessed",
+      experimentCalibrationStatus: "experiment_calibrated",
       roiEstimateRange: { lower: 2.1, upper: 3.3, confidenceLevel: 90 },
       roiUncertaintyStatus: "bounded",
       businessOutcomeKpi: "Incremental revenue contribution",
@@ -444,6 +447,10 @@ export function getAttributionDecisionReadiness(): AttributionDecisionReadiness[
 
     if (signals.holdoutIntegrityStatus === "contamination_suspected") {
       blockers.push("Holdout contamination suspected; lift estimate unreliable");
+    }
+
+    if (signals.experimentCalibrationStatus === "uncalibrated") {
+      blockers.push("ROI estimates not calibrated with incrementality experiments");
     }
 
     if (signals.consentAuditTrailStatus !== "complete") {
