@@ -17,6 +17,7 @@ export type FutureScenarioBasis = "current_inputs" | "historical_defaults";
 export type PredictiveValidationStatus = "passed" | "needs_review" | "not_available";
 export type HoldoutIntegrityStatus = "verified_clean" | "contamination_suspected" | "not_assessed";
 export type ExperimentCalibrationStatus = "experiment_calibrated" | "uncalibrated";
+export type CampaignPacingStatus = "on_track" | "over_pacing" | "under_pacing" | "not_applicable";
 export type AIContentStatus = "draft" | "review" | "approved" | "published";
 export type CampaignGoal = "awareness" | "lead_gen" | "conversion" | "retention" | "upsell";
 export type AISentiment = "positive" | "neutral" | "persuasive";
@@ -91,6 +92,15 @@ export interface AttributionModel {
     businessOutcomeKpi: string;
     cookielessReady: boolean;
   };
+}
+
+export interface CampaignPacing {
+  campaignId: string;
+  campaignName: string;
+  status: CampaignPacingStatus;
+  spendPct: number;
+  expectedSpendPct: number;
+  pacingRatio: number | null;
 }
 
 export interface AttributionDecisionReadiness {

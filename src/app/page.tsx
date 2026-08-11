@@ -2,11 +2,12 @@
 
 import { useMemo } from "react";
 import { clsx } from "clsx";
-import { campaigns, channels, contentAssets, attributionModels, aiGeneratedContent, computeMetrics } from "@/lib/demo-data";
+import { campaigns, channels, contentAssets, attributionModels, aiGeneratedContent, computeMetrics, getCampaignPacing } from "@/lib/demo-data";
 import { StatusDot, Badge, Card, ProgressBar, StatCard } from "@/components/ui";
 import type {
   AIDiscoveryEvidence,
   Campaign,
+  CampaignPacingStatus,
   CleanRoomInteroperability,
   ConsentAuditTrailStatus,
   IncrementalityTestDesign,
@@ -173,10 +174,32 @@ function roiUncertaintyClass(status: AttributionUncertaintyStatus): string {
   return map[status];
 }
 
+function pacingStatusClass(status: CampaignPacingStatus): string {
+  const map: Record<CampaignPacingStatus, string> = {
+    on_track: "bg-emerald-50 text-emerald-700",
+    over_pacing: "bg-red-50 text-red-700",
+    under_pacing: "bg-amber-50 text-amber-700",
+    not_applicable: "bg-slate-50 text-slate-400",
+  };
+  return map[status];
+}
+
+function pacingStatusLabel(status: CampaignPacingStatus): string {
+  const map: Record<CampaignPacingStatus, string> = {
+    on_track: "On track",
+    over_pacing: "Over pacing",
+    under_pacing: "Under pacing",
+    not_applicable: "N/A",
+  };
+  return map[status];
+}
+
 // ── Campaign Row ───────────────────────────────────────────────────────────
 function CampaignRow({ campaign }: { campaign: Campaign }) {
   const roasVar = roasVariant(campaign.roas);
   const spendPct = Math.round((campaign.spend / campaign.budget) * 100);
+  const pacing = getCampaignPacing().find((p) => p.campaignId === campaign.id);
+  const pacingStatus = pacing?.status ?? "not_applicable";
 
   return (
     <Card className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -234,6 +257,14 @@ function CampaignRow({ campaign }: { campaign: Campaign }) {
             variant={spendPct > 90 ? "warning" : spendPct > 70 ? "info" : "success"}
           />
         </div>
+        {pacingStatus !== "not_applicable" && (
+          <span className={clsx(
+            "inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium",
+            pacingStatusClass(pacingStatus)
+          )}>
+            {pacingStatusLabel(pacingStatus)}
+          </span>
+        )}
       </div>
     </Card>
   );

@@ -7,6 +7,8 @@ import {
   AttributionDecisionUse,
   AIGeneratedContent,
   MarketingMetrics,
+  CampaignPacing,
+  CampaignPacingStatus,
 } from "./types";
 
 export const channels: Channel[] = [
@@ -738,4 +740,72 @@ export function computeMetrics(): MarketingMetrics {
     topPerformingAsset: topAsset?.title ?? "N/A",
     aiContentGenerated: aiGeneratedContent.length,
   };
+}
+
+export function getCampaignPacing(asOfDate?: Date): CampaignPacing[] {
+  const reference = asOfDate ?? new Date();
+
+  return campaigns.map((campaign) => {
+    const spendPct = campaign.budget > 0
+      ? Math.round((campaign.spend / campaign.budget) * 1000) / 10
+      : 0;
+
+    const start = new Date(campaign.startDate);
+    const end = campaign.endDate ? new Date(campaign.endDate) : null;
+
+    // Not applicable if no end date, campaign hasn't started, or already ended
+    if (!end || reference < start || reference > end) {
+      return {
+        campaignId: campaign.id,
+        campaignName: campaign.name,
+        status: "not_applicable" as CampaignPacingStatus,
+        spendPct,
+        expectedSpendPct: 0,
+        pacingRatio: null,
+      };
+    }
+
+    const totalMs = end.getTime() - start.getTime();
+    const elapsedMs = reference.getTime() - start.getTime();
+
+    if (totalMs <= 0) {
+      return {
+        campaignId: campaign.id,
+        campaignName: campaign.name,
+        status: "not_applicable" as CampaignPacingStatus,
+        spendPct,
+        expectedSpendPct: 0,
+        pacingRatio: null,
+      };
+    }
+
+    const expectedSpendPct = Math.min(
+      Math.round((elapsedMs / totalMs) * 1000) / 10,
+      100
+    );
+
+    const pacingRatio = expectedSpendPct > 0
+      ? Math.round((spendPct / expectedSpendPct) * 100) / 100
+      : null;
+
+    let status: CampaignPacingStatus;
+    if (pacingRatio === null) {
+      status = "not_applicable";
+    } else if (pacingRatio > 1.15) {
+      status = "over_pacing";
+    } else if (pacingRatio < 0.85) {
+      status = "under_pacing";
+    } else {
+      status = "on_track";
+    }
+
+    return {
+      campaignId: campaign.id,
+      campaignName: campaign.name,
+      status,
+      spendPct,
+      expectedSpendPct,
+      pacingRatio,
+    };
+  });
 }
