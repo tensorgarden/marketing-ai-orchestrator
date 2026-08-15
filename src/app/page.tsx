@@ -8,6 +8,7 @@ import type {
   AIDiscoveryEvidence,
   Campaign,
   CampaignPacingStatus,
+  CarryoverModelingStatus,
   CleanRoomInteroperability,
   ConsentAuditTrailStatus,
   IncrementalityTestDesign,
@@ -137,6 +138,14 @@ function futureScenarioBasisClass(basis: FutureScenarioBasis): string {
     historical_defaults: "bg-amber-50 text-amber-700",
   };
   return map[basis];
+}
+
+function carryoverClass(status: CarryoverModelingStatus): string {
+  const map: Record<CarryoverModelingStatus, string> = {
+    carryover_modeled: "bg-emerald-50 text-emerald-700",
+    carryover_ignored: "bg-red-50 text-red-700",
+  };
+  return map[status];
 }
 
 function predictiveValidationClass(status: PredictiveValidationStatus): string {
@@ -350,6 +359,14 @@ function ChannelAttribution() {
             Conversion lag: {model.privacySignals.conversionReportingLagHours}h
           </span>
         )}
+        <span className={clsx(
+          "inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium",
+          carryoverClass(model.privacySignals.carryoverModelingStatus)
+        )}>
+          Carryover: {model.privacySignals.carryoverModelingStatus === "carryover_modeled"
+            ? `${model.privacySignals.carryoverWindowDays}d window`
+            : "not modeled"}
+        </span>
         <span className={clsx(
           "inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium",
           model.privacySignals.dataMaturity === "mature"

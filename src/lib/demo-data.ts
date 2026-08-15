@@ -298,6 +298,8 @@ export const attributionModels: AttributionModel[] = [
       incrementalityTestDesign: "geo_holdout",
       incrementalityReadoutWindowDays: 28,
       conversionReportingLagHours: 15,
+      carryoverModelingStatus: "carryover_modeled",
+      carryoverWindowDays: 35,
       dataMaturity: "mature",
       marginalRoiEstimate: 1.8,
       budgetResponseStatus: "headroom",
@@ -342,6 +344,8 @@ export const attributionModels: AttributionModel[] = [
       incrementalityTestDesign: "none",
       incrementalityReadoutWindowDays: null,
       conversionReportingLagHours: 72,
+      carryoverModelingStatus: "carryover_ignored",
+      carryoverWindowDays: null,
       dataMaturity: "provisional",
       marginalRoiEstimate: 0.7,
       budgetResponseStatus: "diminishing_returns",
@@ -386,6 +390,8 @@ export const attributionModels: AttributionModel[] = [
       incrementalityTestDesign: "none",
       incrementalityReadoutWindowDays: null,
       conversionReportingLagHours: null,
+      carryoverModelingStatus: "carryover_modeled",
+      carryoverWindowDays: 56,
       dataMaturity: "mature",
       marginalRoiEstimate: 1.4,
       budgetResponseStatus: "headroom",
@@ -453,6 +459,10 @@ export function getAttributionDecisionReadiness(): AttributionDecisionReadiness[
 
     if (signals.experimentCalibrationStatus === "uncalibrated") {
       blockers.push("ROI estimates not calibrated with incrementality experiments");
+    }
+
+    if (signals.carryoverModelingStatus === "carryover_ignored") {
+      blockers.push("Delayed conversion carryover not modeled; short-window evidence overstates last-touch channels");
     }
 
     if (signals.consentAuditTrailStatus !== "complete") {

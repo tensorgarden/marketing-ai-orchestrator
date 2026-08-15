@@ -495,6 +495,44 @@ describe("demo-data: attributionModels", () => {
       expect(decision?.blockers).toContain("ROI estimates not calibrated with incrementality experiments");
     }
   });
+
+  it("should expose carryover modeling status for delayed conversion effects", () => {
+    const statuses = new Set(
+      attributionModels.map((model) => model.privacySignals.carryoverModelingStatus)
+    );
+    expect(statuses).toContain("carryover_modeled");
+    expect(statuses).toContain("carryover_ignored");
+
+    for (const model of attributionModels) {
+      const status = model.privacySignals.carryoverModelingStatus;
+      expect(["carryover_modeled", "carryover_ignored"]).toContain(status);
+
+      const carryoverWindow = model.privacySignals.carryoverWindowDays;
+      if (status === "carryover_modeled") {
+        expect(carryoverWindow).not.toBeNull();
+        expect(carryoverWindow!).toBeGreaterThanOrEqual(28);
+        expect(carryoverWindow!).toBeLessThanOrEqual(90);
+      } else {
+        expect(carryoverWindow).toBeNull();
+      }
+    }
+  });
+
+  it("should keep carryover-blind attribution diagnostic-only", () => {
+    const ignoredModels = attributionModels.filter(
+      (model) => model.privacySignals.carryoverModelingStatus === "carryover_ignored"
+    );
+    expect(ignoredModels.length).toBeGreaterThan(0);
+
+    const readiness = getAttributionDecisionReadiness();
+    for (const model of ignoredModels) {
+      const decision = readiness.find((record) => record.modelId === model.id);
+      expect(decision?.decisionUse).toBe("diagnostic_only");
+      expect(decision?.blockers).toContain(
+        "Delayed conversion carryover not modeled; short-window evidence overstates last-touch channels"
+      );
+    }
+  });
 });
 
 describe("demo-data: campaignPacing", () => {
