@@ -20,6 +20,7 @@ import type {
   PredictiveValidationStatus,
   HoldoutIntegrityStatus,
   ExperimentCalibrationStatus,
+  ProfitReadinessStatus,
 } from "@/lib/types";
 
 // ── Helpers ────────────────────────────────────────────────────────────────
@@ -144,6 +145,15 @@ function carryoverClass(status: CarryoverModelingStatus): string {
   const map: Record<CarryoverModelingStatus, string> = {
     carryover_modeled: "bg-emerald-50 text-emerald-700",
     carryover_ignored: "bg-red-50 text-red-700",
+  };
+  return map[status];
+}
+
+function profitReadinessClass(status: ProfitReadinessStatus): string {
+  const map: Record<ProfitReadinessStatus, string> = {
+    profit_verified: "bg-emerald-50 text-emerald-700",
+    below_breakeven: "bg-red-50 text-red-700",
+    not_assessed: "bg-amber-50 text-amber-700",
   };
   return map[status];
 }
@@ -357,6 +367,17 @@ function ChannelAttribution() {
         {model.privacySignals.conversionReportingLagHours !== null && (
           <span className="inline-flex items-center gap-1 rounded-full bg-orange-50 px-2 py-0.5 text-xs font-medium text-orange-700">
             Conversion lag: {model.privacySignals.conversionReportingLagHours}h
+          </span>
+        )}
+        <span className={clsx(
+          "inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium",
+          profitReadinessClass(model.privacySignals.profitReadinessStatus)
+        )}>
+          Profit: {model.privacySignals.profitReadinessStatus.replace("_", " ")}
+        </span>
+        {model.privacySignals.breakEvenRoas !== null && (
+          <span className="inline-flex items-center gap-1 rounded-full bg-rose-50 px-2 py-0.5 text-xs font-medium text-rose-700">
+            Break-even ROAS: {model.privacySignals.breakEvenRoas}x
           </span>
         )}
         <span className={clsx(

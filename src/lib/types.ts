@@ -19,6 +19,7 @@ export type HoldoutIntegrityStatus = "verified_clean" | "contamination_suspected
 export type ExperimentCalibrationStatus = "experiment_calibrated" | "uncalibrated";
 export type CampaignPacingStatus = "on_track" | "over_pacing" | "under_pacing" | "not_applicable";
 export type CarryoverModelingStatus = "carryover_modeled" | "carryover_ignored";
+export type ProfitReadinessStatus = "profit_verified" | "below_breakeven" | "not_assessed";
 export type AIContentStatus = "draft" | "review" | "approved" | "published";
 export type CampaignGoal = "awareness" | "lead_gen" | "conversion" | "retention" | "upsell";
 export type AISentiment = "positive" | "neutral" | "persuasive";
@@ -92,6 +93,8 @@ export interface AttributionModel {
     experimentCalibrationStatus: ExperimentCalibrationStatus;
     roiEstimateRange: { lower: number; upper: number; confidenceLevel: number } | null;
     roiUncertaintyStatus: AttributionUncertaintyStatus;
+    breakEvenRoas: number | null;
+    profitReadinessStatus: ProfitReadinessStatus;
     businessOutcomeKpi: string;
     cookielessReady: boolean;
   };

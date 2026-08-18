@@ -533,6 +533,52 @@ describe("demo-data: attributionModels", () => {
       );
     }
   });
+
+  it("should gate budget readiness on contribution-margin break-even, not ROAS alone", () => {
+    const statuses = new Set(
+      attributionModels.map((model) => model.privacySignals.profitReadinessStatus)
+    );
+    expect(statuses).toContain("profit_verified");
+    expect(statuses).toContain("below_breakeven");
+    expect(statuses).toContain("not_assessed");
+
+    for (const model of attributionModels) {
+      const status = model.privacySignals.profitReadinessStatus;
+      const breakEvenRoas = model.privacySignals.breakEvenRoas;
+      expect(["profit_verified", "below_breakeven", "not_assessed"]).toContain(status);
+
+      if (status === "not_assessed") {
+        expect(breakEvenRoas).toBeNull();
+      } else {
+        expect(breakEvenRoas).not.toBeNull();
+        expect(breakEvenRoas).toBeGreaterThanOrEqual(1);
+        expect(breakEvenRoas).toBeLessThanOrEqual(10);
+      }
+
+      const roiRange = model.privacySignals.roiEstimateRange;
+      if (status === "below_breakeven") {
+        expect(roiRange!.lower).toBeLessThan(breakEvenRoas!);
+      }
+      if (status === "profit_verified") {
+        expect(roiRange!.lower).toBeGreaterThanOrEqual(breakEvenRoas!);
+      }
+    }
+  });
+
+  it("should keep below-break-even attribution diagnostic-only", () => {
+    const belowBreakevenModels = attributionModels.filter(
+      (model) => model.privacySignals.profitReadinessStatus === "below_breakeven"
+    );
+    expect(belowBreakevenModels.length).toBeGreaterThan(0);
+
+    const readiness = getAttributionDecisionReadiness();
+    for (const model of belowBreakevenModels) {
+      const decision = readiness.find((record) => record.modelId === model.id);
+      expect(decision?.decisionUse).toBe("diagnostic_only");
+      expect(decision?.blockers).toContain("Attributed ROAS below contribution-margin break-even");
+    }
+  });
+
 });
 
 describe("demo-data: campaignPacing", () => {

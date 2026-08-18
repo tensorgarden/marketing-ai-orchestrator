@@ -310,6 +310,8 @@ export const attributionModels: AttributionModel[] = [
       experimentCalibrationStatus: "experiment_calibrated",
       roiEstimateRange: { lower: 2.7, upper: 3.4, confidenceLevel: 95 },
       roiUncertaintyStatus: "bounded",
+      breakEvenRoas: 2.4,
+      profitReadinessStatus: "profit_verified",
       businessOutcomeKpi: "Qualified pipeline revenue",
       cookielessReady: true,
     },
@@ -356,6 +358,8 @@ export const attributionModels: AttributionModel[] = [
       experimentCalibrationStatus: "uncalibrated",
       roiEstimateRange: { lower: 0.6, upper: 3.1, confidenceLevel: 95 },
       roiUncertaintyStatus: "wide",
+      breakEvenRoas: 2.4,
+      profitReadinessStatus: "below_breakeven",
       businessOutcomeKpi: "Attributed conversions",
       cookielessReady: false,
     },
@@ -402,6 +406,8 @@ export const attributionModels: AttributionModel[] = [
       experimentCalibrationStatus: "experiment_calibrated",
       roiEstimateRange: { lower: 2.1, upper: 3.3, confidenceLevel: 90 },
       roiUncertaintyStatus: "bounded",
+      breakEvenRoas: null,
+      profitReadinessStatus: "not_assessed",
       businessOutcomeKpi: "Incremental revenue contribution",
       cookielessReady: true,
     },
@@ -439,6 +445,10 @@ export function getAttributionDecisionReadiness(): AttributionDecisionReadiness[
 
     if (signals.budgetResponseStatus === "diminishing_returns") {
       blockers.push("Marginal ROI indicates diminishing returns");
+    }
+
+    if (signals.profitReadinessStatus === "below_breakeven") {
+      blockers.push("Attributed ROAS below contribution-margin break-even");
     }
 
     if (signals.futureScenarioBasis === "historical_defaults") {
