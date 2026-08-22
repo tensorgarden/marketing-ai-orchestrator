@@ -349,6 +349,31 @@ describe("demo-data: attributionModels", () => {
     }
   });
 
+  it("should anchor suspected holdout contamination to concrete exposure sources", () => {
+    const sourceKinds = new Set(
+      attributionModels.flatMap((model) => model.privacySignals.holdoutContaminationSources)
+    );
+    expect(sourceKinds).toContain("cross_platform_exposure");
+    expect(sourceKinds).toContain("brand_search_overlap");
+
+    for (const model of attributionModels) {
+      const sources = model.privacySignals.holdoutContaminationSources;
+      if (model.privacySignals.holdoutIntegrityStatus === "contamination_suspected") {
+        expect(sources.length).toBeGreaterThan(0);
+      } else {
+        expect(sources).toHaveLength(0);
+      }
+    }
+  });
+
+  it("should surface concrete contamination sources in decision readiness blockers", () => {
+    const readiness = getAttributionDecisionReadiness();
+    const timeDecay = readiness.find((record) => record.modelName === "Time Decay Model");
+    expect(timeDecay?.blockers).toContain(
+      "Holdout contamination sources require review: cross platform exposure, brand search overlap"
+    );
+  });
+
   it("should keep suspected holdout contamination diagnostic-only", () => {
     const contaminatedModels = attributionModels.filter(
       (model) => model.privacySignals.holdoutIntegrityStatus === "contamination_suspected"

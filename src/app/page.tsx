@@ -19,6 +19,7 @@ import type {
   FutureScenarioBasis,
   PredictiveValidationStatus,
   HoldoutIntegrityStatus,
+  HoldoutContaminationSource,
   ExperimentCalibrationStatus,
   ProfitReadinessStatus,
 } from "@/lib/types";
@@ -174,6 +175,15 @@ function holdoutIntegrityClass(status: HoldoutIntegrityStatus): string {
     not_assessed: "bg-slate-100 text-slate-600",
   };
   return map[status];
+}
+
+function holdoutContaminationSourceLabel(source: HoldoutContaminationSource): string {
+  const map: Record<HoldoutContaminationSource, string> = {
+    cross_platform_exposure: "Cross-platform exposure",
+    geo_spillover: "Geo spillover",
+    brand_search_overlap: "Brand search overlap",
+  };
+  return map[source];
 }
 
 function experimentCalibrationClass(status: ExperimentCalibrationStatus): string {
@@ -413,6 +423,11 @@ function ChannelAttribution() {
         <span className={clsx("inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium", holdoutIntegrityClass(model.privacySignals.holdoutIntegrityStatus))}>
           Holdout integrity: {model.privacySignals.holdoutIntegrityStatus.replace("_", " ")}
         </span>
+        {model.privacySignals.holdoutContaminationSources.length > 0 && (
+          <span className="inline-flex items-center gap-1 rounded-full bg-rose-50 px-2 py-0.5 text-xs font-medium text-rose-700">
+            Contamination: {model.privacySignals.holdoutContaminationSources.map(holdoutContaminationSourceLabel).join(", ")}
+          </span>
+        )}
         <span className={clsx("inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium", experimentCalibrationClass(model.privacySignals.experimentCalibrationStatus))}>
           Calibration: {model.privacySignals.experimentCalibrationStatus === "experiment_calibrated" ? "experiment priors" : "uncalibrated"}
         </span>

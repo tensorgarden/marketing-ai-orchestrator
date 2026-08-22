@@ -307,6 +307,7 @@ export const attributionModels: AttributionModel[] = [
       holdoutMape: 8.4,
       predictiveValidationStatus: "passed",
       holdoutIntegrityStatus: "verified_clean",
+      holdoutContaminationSources: [],
       experimentCalibrationStatus: "experiment_calibrated",
       roiEstimateRange: { lower: 2.7, upper: 3.4, confidenceLevel: 95 },
       roiUncertaintyStatus: "bounded",
@@ -355,6 +356,7 @@ export const attributionModels: AttributionModel[] = [
       holdoutMape: 21.7,
       predictiveValidationStatus: "needs_review",
       holdoutIntegrityStatus: "contamination_suspected",
+      holdoutContaminationSources: ["cross_platform_exposure", "brand_search_overlap"],
       experimentCalibrationStatus: "uncalibrated",
       roiEstimateRange: { lower: 0.6, upper: 3.1, confidenceLevel: 95 },
       roiUncertaintyStatus: "wide",
@@ -403,6 +405,7 @@ export const attributionModels: AttributionModel[] = [
       holdoutMape: 9.6,
       predictiveValidationStatus: "passed",
       holdoutIntegrityStatus: "not_assessed",
+      holdoutContaminationSources: [],
       experimentCalibrationStatus: "experiment_calibrated",
       roiEstimateRange: { lower: 2.1, upper: 3.3, confidenceLevel: 90 },
       roiUncertaintyStatus: "bounded",
@@ -465,6 +468,12 @@ export function getAttributionDecisionReadiness(): AttributionDecisionReadiness[
 
     if (signals.holdoutIntegrityStatus === "contamination_suspected") {
       blockers.push("Holdout contamination suspected; lift estimate unreliable");
+      const contaminationSources = signals.holdoutContaminationSources
+        .map((source) => source.replace(/_/g, " "))
+        .join(", ");
+      if (contaminationSources) {
+        blockers.push(`Holdout contamination sources require review: ${contaminationSources}`);
+      }
     }
 
     if (signals.experimentCalibrationStatus === "uncalibrated") {

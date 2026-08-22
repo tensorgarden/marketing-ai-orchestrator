@@ -16,6 +16,7 @@ export type BudgetResponseStatus = "headroom" | "diminishing_returns" | "not_est
 export type FutureScenarioBasis = "current_inputs" | "historical_defaults";
 export type PredictiveValidationStatus = "passed" | "needs_review" | "not_available";
 export type HoldoutIntegrityStatus = "verified_clean" | "contamination_suspected" | "not_assessed";
+export type HoldoutContaminationSource = "cross_platform_exposure" | "geo_spillover" | "brand_search_overlap";
 export type ExperimentCalibrationStatus = "experiment_calibrated" | "uncalibrated";
 export type CampaignPacingStatus = "on_track" | "over_pacing" | "under_pacing" | "not_applicable";
 export type CarryoverModelingStatus = "carryover_modeled" | "carryover_ignored";
@@ -90,6 +91,7 @@ export interface AttributionModel {
     holdoutMape: number | null;
     predictiveValidationStatus: PredictiveValidationStatus;
     holdoutIntegrityStatus: HoldoutIntegrityStatus;
+    holdoutContaminationSources: HoldoutContaminationSource[];
     experimentCalibrationStatus: ExperimentCalibrationStatus;
     roiEstimateRange: { lower: number; upper: number; confidenceLevel: number } | null;
     roiUncertaintyStatus: AttributionUncertaintyStatus;
