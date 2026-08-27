@@ -309,6 +309,9 @@ export const attributionModels: AttributionModel[] = [
       holdoutIntegrityStatus: "verified_clean",
       holdoutContaminationSources: [],
       experimentCalibrationStatus: "experiment_calibrated",
+      experimentPowerStatus: "decision_powered",
+      plannedPowerPct: 80,
+      minimumDetectableLiftPct: 10,
       roiEstimateRange: { lower: 2.7, upper: 3.4, confidenceLevel: 95 },
       roiUncertaintyStatus: "bounded",
       breakEvenRoas: 2.4,
@@ -358,6 +361,9 @@ export const attributionModels: AttributionModel[] = [
       holdoutIntegrityStatus: "contamination_suspected",
       holdoutContaminationSources: ["cross_platform_exposure", "brand_search_overlap"],
       experimentCalibrationStatus: "uncalibrated",
+      experimentPowerStatus: "underpowered",
+      plannedPowerPct: 55,
+      minimumDetectableLiftPct: 20,
       roiEstimateRange: { lower: 0.6, upper: 3.1, confidenceLevel: 95 },
       roiUncertaintyStatus: "wide",
       breakEvenRoas: 2.4,
@@ -407,6 +413,9 @@ export const attributionModels: AttributionModel[] = [
       holdoutIntegrityStatus: "not_assessed",
       holdoutContaminationSources: [],
       experimentCalibrationStatus: "experiment_calibrated",
+      experimentPowerStatus: "not_assessed",
+      plannedPowerPct: null,
+      minimumDetectableLiftPct: null,
       roiEstimateRange: { lower: 2.1, upper: 3.3, confidenceLevel: 90 },
       roiUncertaintyStatus: "bounded",
       breakEvenRoas: null,
@@ -478,6 +487,10 @@ export function getAttributionDecisionReadiness(): AttributionDecisionReadiness[
 
     if (signals.experimentCalibrationStatus === "uncalibrated") {
       blockers.push("ROI estimates not calibrated with incrementality experiments");
+    }
+
+    if (signals.experimentPowerStatus === "underpowered") {
+      blockers.push("Incrementality evidence is underpowered for the planned decision threshold");
     }
 
     if (signals.carryoverModelingStatus === "carryover_ignored") {

@@ -21,6 +21,7 @@ import type {
   HoldoutIntegrityStatus,
   HoldoutContaminationSource,
   ExperimentCalibrationStatus,
+  ExperimentPowerStatus,
   ProfitReadinessStatus,
 } from "@/lib/types";
 
@@ -190,6 +191,15 @@ function experimentCalibrationClass(status: ExperimentCalibrationStatus): string
   const map: Record<ExperimentCalibrationStatus, string> = {
     experiment_calibrated: "bg-emerald-50 text-emerald-700",
     uncalibrated: "bg-amber-50 text-amber-700",
+  };
+  return map[status];
+}
+
+function experimentPowerClass(status: ExperimentPowerStatus): string {
+  const map: Record<ExperimentPowerStatus, string> = {
+    decision_powered: "bg-emerald-50 text-emerald-700",
+    underpowered: "bg-red-50 text-red-700",
+    not_assessed: "bg-slate-100 text-slate-600",
   };
   return map[status];
 }
@@ -430,6 +440,11 @@ function ChannelAttribution() {
         )}
         <span className={clsx("inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium", experimentCalibrationClass(model.privacySignals.experimentCalibrationStatus))}>
           Calibration: {model.privacySignals.experimentCalibrationStatus === "experiment_calibrated" ? "experiment priors" : "uncalibrated"}
+        </span>
+        <span className={clsx("inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium", experimentPowerClass(model.privacySignals.experimentPowerStatus))}>
+          Power: {model.privacySignals.experimentPowerStatus === "not_assessed"
+            ? "not assessed"
+            : `${model.privacySignals.plannedPowerPct}% / MDE ${model.privacySignals.minimumDetectableLiftPct}%`}
         </span>
         {model.privacySignals.holdoutMape !== null && (
           <span className="inline-flex items-center gap-1 rounded-full bg-sky-50 px-2 py-0.5 text-xs font-medium text-sky-700">

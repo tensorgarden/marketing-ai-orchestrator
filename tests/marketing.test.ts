@@ -606,6 +606,58 @@ describe("demo-data: attributionModels", () => {
 
 });
 
+describe("demo-data: experiment power readiness", () => {
+  it("should distinguish decision-powered, underpowered, and unassessed experiment plans", () => {
+    const statuses = new Set(
+      attributionModels.map((model) => model.privacySignals.experimentPowerStatus)
+    );
+    expect(statuses).toContain("decision_powered");
+    expect(statuses).toContain("underpowered");
+    expect(statuses).toContain("not_assessed");
+
+    for (const model of attributionModels) {
+      const signals = model.privacySignals;
+      expect(["decision_powered", "underpowered", "not_assessed"]).toContain(
+        signals.experimentPowerStatus
+      );
+
+      if (signals.experimentPowerStatus === "not_assessed") {
+        expect(signals.plannedPowerPct).toBeNull();
+        expect(signals.minimumDetectableLiftPct).toBeNull();
+      } else {
+        expect(signals.plannedPowerPct).not.toBeNull();
+        expect(signals.plannedPowerPct).toBeGreaterThan(0);
+        expect(signals.plannedPowerPct).toBeLessThanOrEqual(99);
+        expect(signals.minimumDetectableLiftPct).not.toBeNull();
+        expect(signals.minimumDetectableLiftPct).toBeGreaterThan(0);
+      }
+
+      if (signals.experimentPowerStatus === "decision_powered") {
+        expect(signals.plannedPowerPct).toBeGreaterThanOrEqual(80);
+      }
+      if (signals.experimentPowerStatus === "underpowered") {
+        expect(signals.plannedPowerPct).toBeLessThan(80);
+      }
+    }
+  });
+
+  it("should keep underpowered experiment evidence diagnostic-only", () => {
+    const underpoweredModels = attributionModels.filter(
+      (model) => model.privacySignals.experimentPowerStatus === "underpowered"
+    );
+    expect(underpoweredModels.length).toBeGreaterThan(0);
+
+    const readiness = getAttributionDecisionReadiness();
+    for (const model of underpoweredModels) {
+      const decision = readiness.find((record) => record.modelId === model.id);
+      expect(decision?.decisionUse).toBe("diagnostic_only");
+      expect(decision?.blockers).toContain(
+        "Incrementality evidence is underpowered for the planned decision threshold"
+      );
+    }
+  });
+});
+
 describe("demo-data: campaignPacing", () => {
   it("should return pacing records for every campaign", () => {
     const pacing = getCampaignPacing(new Date("2026-08-15"));

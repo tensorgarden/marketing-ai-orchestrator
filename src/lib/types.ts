@@ -18,6 +18,7 @@ export type PredictiveValidationStatus = "passed" | "needs_review" | "not_availa
 export type HoldoutIntegrityStatus = "verified_clean" | "contamination_suspected" | "not_assessed";
 export type HoldoutContaminationSource = "cross_platform_exposure" | "geo_spillover" | "brand_search_overlap";
 export type ExperimentCalibrationStatus = "experiment_calibrated" | "uncalibrated";
+export type ExperimentPowerStatus = "decision_powered" | "underpowered" | "not_assessed";
 export type CampaignPacingStatus = "on_track" | "over_pacing" | "under_pacing" | "not_applicable";
 export type CarryoverModelingStatus = "carryover_modeled" | "carryover_ignored";
 export type ProfitReadinessStatus = "profit_verified" | "below_breakeven" | "not_assessed";
@@ -93,6 +94,9 @@ export interface AttributionModel {
     holdoutIntegrityStatus: HoldoutIntegrityStatus;
     holdoutContaminationSources: HoldoutContaminationSource[];
     experimentCalibrationStatus: ExperimentCalibrationStatus;
+    experimentPowerStatus: ExperimentPowerStatus;
+    plannedPowerPct: number | null;
+    minimumDetectableLiftPct: number | null;
     roiEstimateRange: { lower: number; upper: number; confidenceLevel: number } | null;
     roiUncertaintyStatus: AttributionUncertaintyStatus;
     breakEvenRoas: number | null;
