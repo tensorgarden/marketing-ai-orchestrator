@@ -15,6 +15,7 @@ import type {
   MeasurementRisk,
   MeasurementValidationMethod,
   AttributionUncertaintyStatus,
+  AttributionWindowStatus,
   BudgetResponseStatus,
   FutureScenarioBasis,
   PredictiveValidationStatus,
@@ -147,6 +148,15 @@ function carryoverClass(status: CarryoverModelingStatus): string {
   const map: Record<CarryoverModelingStatus, string> = {
     carryover_modeled: "bg-emerald-50 text-emerald-700",
     carryover_ignored: "bg-red-50 text-red-700",
+  };
+  return map[status];
+}
+
+function attributionWindowClass(status: AttributionWindowStatus): string {
+  const map: Record<AttributionWindowStatus, string> = {
+    aligned: "bg-emerald-50 text-emerald-700",
+    model_specific: "bg-amber-50 text-amber-700",
+    not_applicable: "bg-slate-100 text-slate-600",
   };
   return map[status];
 }
@@ -407,6 +417,14 @@ function ChannelAttribution() {
           Carryover: {model.privacySignals.carryoverModelingStatus === "carryover_modeled"
             ? `${model.privacySignals.carryoverWindowDays}d window`
             : "not modeled"}
+        </span>
+        <span className={clsx(
+          "inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium",
+          attributionWindowClass(model.privacySignals.attributionWindowStatus)
+        )}>
+          Window: {model.privacySignals.attributionWindow === null
+            ? "not applicable"
+            : `${model.privacySignals.attributionWindow.clickDays}d click / ${model.privacySignals.attributionWindow.viewDays}d view`}
         </span>
         <span className={clsx(
           "inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium",

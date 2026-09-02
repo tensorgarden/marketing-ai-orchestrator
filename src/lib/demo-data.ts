@@ -300,6 +300,8 @@ export const attributionModels: AttributionModel[] = [
       conversionReportingLagHours: 15,
       carryoverModelingStatus: "carryover_modeled",
       carryoverWindowDays: 35,
+      attributionWindow: { clickDays: 30, viewDays: 1 },
+      attributionWindowStatus: "aligned",
       dataMaturity: "mature",
       marginalRoiEstimate: 1.8,
       budgetResponseStatus: "headroom",
@@ -352,6 +354,8 @@ export const attributionModels: AttributionModel[] = [
       conversionReportingLagHours: 72,
       carryoverModelingStatus: "carryover_ignored",
       carryoverWindowDays: null,
+      attributionWindow: { clickDays: 7, viewDays: 1 },
+      attributionWindowStatus: "model_specific",
       dataMaturity: "provisional",
       marginalRoiEstimate: 0.7,
       budgetResponseStatus: "diminishing_returns",
@@ -404,6 +408,8 @@ export const attributionModels: AttributionModel[] = [
       conversionReportingLagHours: null,
       carryoverModelingStatus: "carryover_modeled",
       carryoverWindowDays: 56,
+      attributionWindow: null,
+      attributionWindowStatus: "not_applicable",
       dataMaturity: "mature",
       marginalRoiEstimate: 1.4,
       budgetResponseStatus: "headroom",
@@ -495,6 +501,10 @@ export function getAttributionDecisionReadiness(): AttributionDecisionReadiness[
 
     if (signals.carryoverModelingStatus === "carryover_ignored") {
       blockers.push("Delayed conversion carryover not modeled; short-window evidence overstates last-touch channels");
+    }
+
+    if (signals.attributionWindowStatus === "model_specific") {
+      blockers.push("Attribution lookback window is model-specific; cross-model comparison is unreliable");
     }
 
     if (signals.consentAuditTrailStatus !== "complete") {

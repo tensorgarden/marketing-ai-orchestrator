@@ -604,6 +604,46 @@ describe("demo-data: attributionModels", () => {
     }
   });
 
+  it("should declare explicit attribution windows for model comparison", () => {
+    const statuses = new Set(
+      attributionModels.map((model) => model.privacySignals.attributionWindowStatus)
+    );
+    expect(statuses).toContain("aligned");
+    expect(statuses).toContain("model_specific");
+    expect(statuses).toContain("not_applicable");
+
+    for (const model of attributionModels) {
+      const { attributionWindow, attributionWindowStatus } = model.privacySignals;
+      expect(["aligned", "model_specific", "not_applicable"]).toContain(attributionWindowStatus);
+
+      if (attributionWindowStatus === "not_applicable") {
+        expect(attributionWindow).toBeNull();
+      } else {
+        expect(attributionWindow).not.toBeNull();
+        expect(attributionWindow!.clickDays).toBeGreaterThan(0);
+        expect(attributionWindow!.clickDays).toBeLessThanOrEqual(90);
+        expect(attributionWindow!.viewDays).toBeGreaterThanOrEqual(0);
+        expect(attributionWindow!.viewDays).toBeLessThanOrEqual(30);
+      }
+    }
+  });
+
+  it("should keep model-specific attribution windows diagnostic-only", () => {
+    const modelSpecificModels = attributionModels.filter(
+      (model) => model.privacySignals.attributionWindowStatus === "model_specific"
+    );
+    expect(modelSpecificModels.length).toBeGreaterThan(0);
+
+    const readiness = getAttributionDecisionReadiness();
+    for (const model of modelSpecificModels) {
+      const decision = readiness.find((record) => record.modelId === model.id);
+      expect(decision?.decisionUse).toBe("diagnostic_only");
+      expect(decision?.blockers).toContain(
+        "Attribution lookback window is model-specific; cross-model comparison is unreliable"
+      );
+    }
+  });
+
 });
 
 describe("demo-data: experiment power readiness", () => {
