@@ -302,6 +302,8 @@ export const attributionModels: AttributionModel[] = [
       carryoverWindowDays: 35,
       attributionWindow: { clickDays: 30, viewDays: 1 },
       attributionWindowStatus: "aligned",
+      baselineSeparationStatus: "baseline_separated",
+      baselineWindowDays: 28,
       dataMaturity: "mature",
       marginalRoiEstimate: 1.8,
       budgetResponseStatus: "headroom",
@@ -356,6 +358,8 @@ export const attributionModels: AttributionModel[] = [
       carryoverWindowDays: null,
       attributionWindow: { clickDays: 7, viewDays: 1 },
       attributionWindowStatus: "model_specific",
+      baselineSeparationStatus: "baseline_unseparated",
+      baselineWindowDays: null,
       dataMaturity: "provisional",
       marginalRoiEstimate: 0.7,
       budgetResponseStatus: "diminishing_returns",
@@ -410,6 +414,8 @@ export const attributionModels: AttributionModel[] = [
       carryoverWindowDays: 56,
       attributionWindow: null,
       attributionWindowStatus: "not_applicable",
+      baselineSeparationStatus: "baseline_separated",
+      baselineWindowDays: 365,
       dataMaturity: "mature",
       marginalRoiEstimate: 1.4,
       budgetResponseStatus: "headroom",
@@ -505,6 +511,10 @@ export function getAttributionDecisionReadiness(): AttributionDecisionReadiness[
 
     if (signals.attributionWindowStatus === "model_specific") {
       blockers.push("Attribution lookback window is model-specific; cross-model comparison is unreliable");
+    }
+
+    if (signals.baselineSeparationStatus === "baseline_unseparated") {
+      blockers.push("Seasonality and baseline effects are not separated from media impact");
     }
 
     if (signals.consentAuditTrailStatus !== "complete") {

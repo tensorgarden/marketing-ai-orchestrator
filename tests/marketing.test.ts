@@ -644,6 +644,41 @@ describe("demo-data: attributionModels", () => {
     }
   });
 
+  it("should disclose seasonality and baseline separation for attribution models", () => {
+    const statuses = new Set(
+      attributionModels.map((model) => model.privacySignals.baselineSeparationStatus)
+    );
+    expect(statuses).toContain("baseline_separated");
+    expect(statuses).toContain("baseline_unseparated");
+
+    for (const model of attributionModels) {
+      const signals = model.privacySignals;
+      if (signals.baselineSeparationStatus === "baseline_separated") {
+        expect(signals.baselineWindowDays).not.toBeNull();
+        expect(signals.baselineWindowDays).toBeGreaterThanOrEqual(28);
+        expect(signals.baselineWindowDays).toBeLessThanOrEqual(730);
+      } else {
+        expect(signals.baselineWindowDays).toBeNull();
+      }
+    }
+  });
+
+  it("should keep unseparated seasonality baselines diagnostic-only", () => {
+    const unseparatedModels = attributionModels.filter(
+      (model) => model.privacySignals.baselineSeparationStatus === "baseline_unseparated"
+    );
+    expect(unseparatedModels.length).toBeGreaterThan(0);
+
+    const readiness = getAttributionDecisionReadiness();
+    for (const model of unseparatedModels) {
+      const decision = readiness.find((record) => record.modelId === model.id);
+      expect(decision?.decisionUse).toBe("diagnostic_only");
+      expect(decision?.blockers).toContain(
+        "Seasonality and baseline effects are not separated from media impact"
+      );
+    }
+  });
+
 });
 
 describe("demo-data: experiment power readiness", () => {

@@ -22,6 +22,7 @@ export type ExperimentPowerStatus = "decision_powered" | "underpowered" | "not_a
 export type CampaignPacingStatus = "on_track" | "over_pacing" | "under_pacing" | "not_applicable";
 export type CarryoverModelingStatus = "carryover_modeled" | "carryover_ignored";
 export type AttributionWindowStatus = "aligned" | "model_specific" | "not_applicable";
+export type BaselineSeparationStatus = "baseline_separated" | "baseline_unseparated";
 export type ProfitReadinessStatus = "profit_verified" | "below_breakeven" | "not_assessed";
 export type AIContentStatus = "draft" | "review" | "approved" | "published";
 export type CampaignGoal = "awareness" | "lead_gen" | "conversion" | "retention" | "upsell";
@@ -93,6 +94,8 @@ export interface AttributionModel {
     carryoverWindowDays: number | null;
     attributionWindow: AttributionWindow | null;
     attributionWindowStatus: AttributionWindowStatus;
+    baselineSeparationStatus: BaselineSeparationStatus;
+    baselineWindowDays: number | null;
     dataMaturity: AttributionDataMaturity;
     marginalRoiEstimate: number | null;
     budgetResponseStatus: BudgetResponseStatus;

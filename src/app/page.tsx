@@ -16,6 +16,7 @@ import type {
   MeasurementValidationMethod,
   AttributionUncertaintyStatus,
   AttributionWindowStatus,
+  BaselineSeparationStatus,
   BudgetResponseStatus,
   FutureScenarioBasis,
   PredictiveValidationStatus,
@@ -157,6 +158,14 @@ function attributionWindowClass(status: AttributionWindowStatus): string {
     aligned: "bg-emerald-50 text-emerald-700",
     model_specific: "bg-amber-50 text-amber-700",
     not_applicable: "bg-slate-100 text-slate-600",
+  };
+  return map[status];
+}
+
+function baselineSeparationClass(status: BaselineSeparationStatus): string {
+  const map: Record<BaselineSeparationStatus, string> = {
+    baseline_separated: "bg-emerald-50 text-emerald-700",
+    baseline_unseparated: "bg-amber-50 text-amber-700",
   };
   return map[status];
 }
@@ -425,6 +434,14 @@ function ChannelAttribution() {
           Window: {model.privacySignals.attributionWindow === null
             ? "not applicable"
             : `${model.privacySignals.attributionWindow.clickDays}d click / ${model.privacySignals.attributionWindow.viewDays}d view`}
+        </span>
+        <span className={clsx(
+          "inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium",
+          baselineSeparationClass(model.privacySignals.baselineSeparationStatus)
+        )}>
+          Baseline: {model.privacySignals.baselineSeparationStatus === "baseline_separated"
+            ? `${model.privacySignals.baselineWindowDays}d separated`
+            : "not separated"}
         </span>
         <span className={clsx(
           "inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium",
