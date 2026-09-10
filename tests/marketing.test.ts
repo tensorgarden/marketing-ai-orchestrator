@@ -427,6 +427,30 @@ describe("demo-data: attributionModels", () => {
     }
   });
 
+  it("should route incomplete consent audit trails away from budget-ready use", () => {
+    const incompleteModels = attributionModels.filter(
+      (model) => model.privacySignals.consentAuditTrailStatus !== "complete"
+    );
+    expect(incompleteModels.length).toBeGreaterThan(0);
+
+    const completeModels = attributionModels.filter(
+      (model) => model.privacySignals.consentAuditTrailStatus === "complete"
+    );
+    expect(completeModels.length).toBeGreaterThan(0);
+
+    const readiness = getAttributionDecisionReadiness();
+    for (const model of incompleteModels) {
+      const decision = readiness.find((record) => record.modelId === model.id);
+      expect(decision?.decisionUse).toBe("diagnostic_only");
+      expect(decision?.blockers).toContain("Consent audit trail incomplete");
+    }
+
+    for (const model of completeModels) {
+      const decision = readiness.find((record) => record.modelId === model.id);
+      expect(decision?.blockers).not.toContain("Consent audit trail incomplete");
+    }
+  });
+
   it("should include an incrementality holdout for at least one user-level model", () => {
     const tested = attributionModels.find((m) => m.privacySignals.validationMethod === "incrementality_test");
     expect(tested).toBeDefined();
