@@ -451,6 +451,17 @@ describe("demo-data: attributionModels", () => {
     }
   });
 
+  it("should block cookieless readiness when consent evidence is incomplete", () => {
+    const incompleteModels = attributionModels.filter(
+      (model) => model.privacySignals.consentAuditTrailStatus !== "complete"
+    );
+    expect(incompleteModels.length).toBeGreaterThan(0);
+
+    for (const model of incompleteModels) {
+      expect(model.privacySignals.cookielessReady).toBe(false);
+    }
+  });
+
   it("should include an incrementality holdout for at least one user-level model", () => {
     const tested = attributionModels.find((m) => m.privacySignals.validationMethod === "incrementality_test");
     expect(tested).toBeDefined();
